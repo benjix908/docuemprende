@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Un Poco de Motivación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .presentation-container {
+            width: 1000px;
+            height: 600px;
+            background-color: #f0f4e8;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-slide {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-right: 20px;
+        }
+
+        .title {
+            font-size: 3em;
+            font-weight: bold;
+            color: #1a237e;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .illustration {
+            width: 80%;
+            max-width: 300px;
+        }
+        
+        /* Estrella y efecto brillante */
+        .star {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ffd700;
+            clip-path: polygon(50% 0%, 61.8% 38.2%, 100% 38.2%, 69.1% 61.8%, 80.9% 100%, 50% 76.4%, 19.1% 100%, 30.9% 61.8%, 0% 38.2%, 38.2% 38.2%);
+            opacity: 0.8;
+            z-index: 1;
+        }
+        
+        .star.star-1 { top: 300px; left: 180px; transform: scale(0.8); }
+        .star.star-2 { top: 250px; left: 250px; }
+        .star.star-3 { top: 380px; left: 160px; transform: scale(1.2); }
+        .star.star-4 { top: 410px; left: 280px; transform: scale(0.9); }
+        .star.star-5 { top: 340px; left: 320px; transform: scale(1.1); }
+        .star.star-6 { top: 290px; left: 120px; transform: scale(0.7); }
+
+        .right-panel {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-left: 20px;
+            text-align: left;
+        }
+
+        .text-box {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 25px;
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #333;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .footer {
+            height: 50px;
+            background-color: #1a237e;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 20px;
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        
+        <div class="main-slide">
+            
+            <div class="star star-1"></div>
+            <div class="star star-2"></div>
+            <div class="star star-3"></div>
+            <div class="star star-4"></div>
+            <div class="star star-5"></div>
+            <div class="star star-6"></div>
+
+            <div class="left-panel">
+                <h1 class="title">¿Un poco de motivación?</h1>
+            </div>
+
+            <div class="right-panel">
+                <div class="text-box">
+                    Si estás aquí es porque necesitas un poco de motivación, toma un respiro y recuerda por qué estás aquí, todo el esfuerzo que has hecho para llegar a donde estás. Nada de lo que estás haciendo es en vano y si lo deseas podemos darle un vistazo a las metas de este año.
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="{{ url_for('home') }}" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Inicio</a>
+        </div>
+    </div>
+
+</body>
+</html>

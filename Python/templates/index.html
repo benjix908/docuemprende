@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-azul-profundo: #1A2F6C;
+                --color-azul-celeste-vibrante: #3DC1D3;
+                --color-beige-calido: #F5E6D3;
+                --color-arena-dorada: #D4B485;
+                --color-azul-electrico-claro: #0096C7;
+                --color-bianco-roto: #F9F7F2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[var(--color-azul-profundo)] flex items-center justify-center min-h-screen font-[Poppins]">
+    <div class="bg-[var(--color-beige-calido)] p-8 rounded-lg shadow-xl text-center">
+        <h1 class="text-4xl font-extrabold mb-4 text-[var(--color-azul-profundo)]">DOCUEMPRENDE</h1>
+        <p class="text-lg text-[var(--color-azul-profundo)] mb-6">¿LISTO?</p>
+        <div class="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+            <a href="{{ url_for('register') }}" class="w-full md:w-auto px-6 py-3 bg-[var(--color-azul-electrico-claro)] text-white rounded-full font-semibold hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300 transform hover:scale-105">Registrarse</a>
+            <a href="{{ url_for('login') }}" class="w-full md:w-auto px-6 py-3 bg-[var(--color-azul-celeste-vibrante)] text-[var(--color-azul-profundo)] rounded-full font-semibold hover:bg-[var(--color-azul-electrico-claro)] transition duration-300 transform hover:scale-105">Iniciar Sesión</a>
+        </div>
+    </div>
+</body>
+</html>
