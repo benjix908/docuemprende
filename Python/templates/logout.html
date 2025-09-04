@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-azul-profundo: #1A2F6C;
+                --color-azul-celeste-vibrante: #3DC1D3;
+                --color-beige-calido: #F5E6D3;
+                --color-arena-dorada: #D4B485;
+                --color-azul-electrico-claro: #0096C7;
+                --color-bianco-roto: #F9F7F2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[var(--color-azul-profundo)] flex items-center justify-center min-h-screen font-[Poppins]">
+    <div class="bg-[var(--color-beige-calido)] p-8 rounded-lg shadow-md text-center">
+        <h1 class="text-3xl font-bold mb-4 text-[var(--color-azul-profundo)]">Sesión cerrada correctamente</h1>
+        <a href="{{ url_for('index') }}" class="px-4 py-2 bg-[var(--color-azul-electrico-claro)] text-white rounded-md hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300">Volver al inicio</a>
+    </div>
+</body>
+</html>

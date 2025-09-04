@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plantillas de Documentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .content-editor {
+            min-height: 400px;
+            padding: 1.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+            outline: none;
+            overflow-y: auto;
+        }
+        /* Estilo para los placeholders editables: el texto desaparece al empezar a escribir */
+        .editable-placeholder:empty::before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+            cursor: text;
+        }
+        .editable-placeholder:focus::before {
+            content: "";
+        }
+        /* Estilo para las celdas de tabla editables estándar */
+        .editable-cell {
+            outline: none;
+            cursor: text;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 p-8 container mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Plantillas de Documentos</h1>
+
+        <!-- Selector de Plantillas y Editor -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 max-w-4xl mx-auto">
+            <div class="mb-4">
+                <label for="template-select" class="block text-sm font-medium text-gray-700">Seleccionar Plantilla:</label>
+                <select id="template-select" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition-colors duration-200">
+                    <option value="none">-- Selecciona una plantilla --</option>
+                    <option value="factura">Factura</option>
+                    <option value="guia_de_remision">Guía de Remisión</option>
+                    <option value="orden_de_compra">Orden de Compra</option>
+                    <option value="boleta_de_venta">Boleta de Venta</option>
+                    <option value="recibo_de_ingresos">Recibo de Ingresos</option>
+                    <option value="nota_de_credito">Nota de Crédito</option>
+                    <option value="memorando">Memorando</option>
+                    <option value="oficio">Oficio</option>
+                    <option value="informe">Informe</option>
+                    <option value="acta">Acta</option>
+                    <option value="solicitud">Solicitud</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label for="document-title" class="block text-sm font-medium text-gray-700">Título del Documento:</label>
+                <input type="text" id="document-title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition-colors duration-200" placeholder="Escribe el título aquí...">
+            </div>
+
+            <div id="content-editor" class="content-editor" contenteditable="false">
+                <!-- El contenido de la plantilla se cargará aquí -->
+                <p class="text-gray-500">Selecciona una plantilla para comenzar a editar...</p>
+            </div>
+
+            <div class="flex justify-center mt-4 space-x-4">
+                <button id="download-btn" class="px-6 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-colors duration-200">
+                    Descargar
+                </button>
+            </div>
+        </div>
+
+    </main>
+    
+    <!-- Botón de Inicio en la esquina inferior derecha -->
+    <div class="fixed bottom-4 right-4">
+        <a href="{{ url_for('home') }}" class="px-6 py-2 bg-gray-800 text-white rounded-md shadow-lg hover:bg-gray-700 transition-colors duration-200">
+            Inicio
+        </a>
+    </div>
+
+    <script>
+        const templateSelect = document.getElementById('template-select');
+        const documentTitle = document.getElementById('document-title');
+        const contentEditor = document.getElementById('content-editor');
+        const downloadBtn = document.getElementById('download-btn');
+        
+        const today = new Date();
+        const day = today.getDate();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        const formattedDate = `${day}/${month}/${year}`;
+
+        const templates = {
+            factura: `
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-center mb-6">FACTURA</h1>
+                    <div class="flex justify-between text-sm mb-6">
+                        <div>
+                            <p><strong>Número de Factura:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Factura]"></span></p>
+                            <p><strong>Fecha:</strong> <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                        </div>
+                        <div>
+                            <p><strong>Cliente:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre del Cliente]"></span></p>
+                            <p><strong>Dirección:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Dirección del Cliente]"></span></p>
+                        </div>
+                    </div>
+                    <table class="w-full text-left table-auto border-collapse mb-6" id="items-table">
+                        <thead>
+                            <tr class="bg-gray-100 border-b border-gray-300">
+                                <th class="p-2">Descripción</th>
+                                <th class="p-2">Cantidad</th>
+                                <th class="p-2">Precio Unitario</th>
+                                <th class="p-2">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-placeholder=""></td>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-field="quantity" inputmode="numeric"></td>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-field="price" inputmode="decimal"></td>
+                                <td class="p-2 border-b editable-cell font-semibold" data-field="total" contenteditable="false">0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-row-btn mt-2 px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300 transition-colors duration-200" data-table-id="items-table">Agregar Fila</button>
+                    <div class="text-right mt-6">
+                        <p><strong>Subtotal:</strong> <span class="font-bold" data-field="subtotal">0.00</span></p>
+                        <p><strong>Impuestos:</strong> <span contenteditable="true" class="editable-placeholder font-bold editable-cell" data-field="taxes" data-placeholder="0.00"></span></p>
+                        <p class="text-lg font-bold">Total: <span class="font-bold" data-field="grand-total">0.00</span></p>
+                    </div>
+                </div>
+            `,
+            guia_de_remision: `
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-center mb-6">GUÍA DE REMISIÓN</h1>
+                    <div class="flex justify-between text-sm mb-6">
+                        <div>
+                            <p><strong>Número de Guía:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Guía]"></span></p>
+                            <p><strong>Fecha:</strong> <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                        </div>
+                        <div>
+                            <p><strong>Punto de Partida:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Dirección de Partida]"></span></p>
+                            <p><strong>Punto de Llegada:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Dirección de Llegada]"></span></p>
+                        </div>
+                    </div>
+                    <h2 class="text-lg font-bold mb-2">Productos a Transportar</h2>
+                    <table class="w-full text-left table-auto border-collapse mb-6" id="products-table">
+                        <thead>
+                            <tr class="bg-gray-100 border-b border-gray-300">
+                                <th class="p-2">Descripción</th>
+                                <th class="p-2">Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-placeholder=""></td>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-placeholder=""></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-row-btn mt-2 px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300 transition-colors duration-200" data-table-id="products-table">Agregar Fila</button>
+                </div>
+            `,
+            orden_de_compra: `
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-center mb-6">ORDEN DE COMPRA</h1>
+                    <div class="flex justify-between text-sm mb-6">
+                        <div>
+                            <p><strong>Número de Orden:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Orden]"></span></p>
+                            <p><strong>Fecha:</strong> <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                        </div>
+                        <div>
+                            <p><strong>Proveedor:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre del Proveedor]"></span></p>
+                            <p><strong>Dirección:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Dirección del Proveedor]"></span></p>
+                        </div>
+                    </div>
+                    <table class="w-full text-left table-auto border-collapse mb-6" id="purchase-table">
+                        <thead>
+                            <tr class="bg-gray-100 border-b border-gray-300">
+                                <th class="p-2">Descripción</th>
+                                <th class="p-2">Cantidad</th>
+                                <th class="p-2">Precio Unitario</th>
+                                <th class="p-2">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-placeholder=""></td>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-field="quantity" inputmode="numeric"></td>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-field="price" inputmode="decimal"></td>
+                                <td class="p-2 border-b editable-cell font-semibold" data-field="total" contenteditable="false">0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-row-btn mt-2 px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300 transition-colors duration-200" data-table-id="purchase-table">Agregar Fila</button>
+                    <div class="text-right mt-6">
+                        <p class="text-lg font-bold">Total: <span class="font-bold" data-field="grand-total">0.00</span></p>
+                    </div>
+                </div>
+            `,
+            boleta_de_venta: `
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-center mb-6">BOLETA DE VENTA</h1>
+                    <div class="flex justify-between text-sm mb-6">
+                        <div>
+                            <p><strong>Número de Boleta:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Boleta]"></span></p>
+                            <p><strong>Fecha:</strong> <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                        </div>
+                        <div>
+                            <p><strong>Cliente:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre del Cliente]"></span></p>
+                        </div>
+                    </div>
+                    <table class="w-full text-left table-auto border-collapse mb-6" id="sales-table">
+                        <thead>
+                            <tr class="bg-gray-100 border-b border-gray-300">
+                                <th class="p-2">Descripción</th>
+                                <th class="p-2">Cantidad</th>
+                                <th class="p-2">Precio Unitario</th>
+                                <th class="p-2">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-placeholder=""></td>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-field="quantity" inputmode="numeric"></td>
+                                <td class="p-2 border-b editable-cell" contenteditable="true" data-field="price" inputmode="decimal"></td>
+                                <td class="p-2 border-b editable-cell font-semibold" data-field="total" contenteditable="false">0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-row-btn mt-2 px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300 transition-colors duration-200" data-table-id="sales-table">Agregar Fila</button>
+                    <div class="text-right mt-6">
+                        <p class="text-lg font-bold">Total: <span class="font-bold" data-field="grand-total">0.00</span></p>
+                    </div>
+                </div>
+            `,
+            recibo_de_ingresos: `
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-center mb-6">RECIBO DE INGRESOS</h1>
+                    <div class="flex justify-between text-sm mb-6">
+                        <div>
+                            <p><strong>Número de Recibo:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Recibo]"></span></p>
+                            <p><strong>Fecha:</strong> <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <p>Recibí de: <strong contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre del Pagador]"></strong></p>
+                        <p>La cantidad de: <strong>$ <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Monto Recibido]"></span></strong> (<span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Monto en Letras]"></span>)</p>
+                        <p>Por concepto de: <strong contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Concepto del Pago]"></strong></p>
+                    </div>
+                    <div class="mt-12 text-center">
+                        <p>_________________________</p>
+                        <p><strong>Firma y Sello</strong></p>
+                    </div>
+                </div>
+            `,
+            nota_de_credito: `
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-center mb-6">NOTA DE CRÉDITO</h1>
+                    <div class="flex justify-between text-sm mb-6">
+                        <div>
+                            <p><strong>Número de Nota:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Nota]"></span></p>
+                            <p><strong>Fecha:</strong> <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                        </div>
+                        <div>
+                            <p><strong>Relacionada con Factura N.º:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Factura]"></span></p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <p><strong>Motivo:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Explicación del motivo de la nota de crédito]"></span></p>
+                        <p>Se acredita la cantidad de: <strong>$ <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Monto Acreditado]"></span></strong></p>
+                    </div>
+                    <div class="mt-12 text-center">
+                        <p>_________________________</p>
+                        <p><strong>Autorización</strong></p>
+                    </div>
+                </div>
+            `,
+            memorando: `
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-center mb-6">MEMORANDO</h1>
+                    <div class="space-y-2 text-sm">
+                        <p><strong>De:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre del Remitente]"></span></p>
+                        <p><strong>Para:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre del Destinatario]"></span></p>
+                        <p><strong>Fecha:</strong> <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                        <p><strong>Asunto:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Asunto del Memorando]"></span></p>
+                    </div>
+                    <hr class="my-6 border-t-2 border-gray-300">
+                    <div class="leading-relaxed">
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="Por medio del presente, me dirijo a usted con el propósito de [exponer el motivo del memorando, por ejemplo, solicitar información, comunicar una directiva, etc.]."></p>
+                        <p class="mt-4" contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="Agradezco de antemano su atención y colaboración."></p>
+                        <p class="mt-8">Atentamente,</p>
+                        <p class="mt-4" contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Firma]"></p>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre Completo]"></p>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Cargo]"></p>
+                    </div>
+                </div>
+            `,
+            oficio: `
+                <div class="p-6">
+                    <div class="text-right text-sm mb-6">
+                        <p><strong>Oficio N.º:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Oficio]"></span></p>
+                        <p><strong>Fecha:</strong> <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                    </div>
+                    <h1 class="text-2xl font-bold text-center mb-6">OFICIO</h1>
+                    <div class="space-y-2 text-sm mb-6">
+                        <p><strong>Señor/Señora:</strong></p>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre del Destinatario]"></p>
+                        <p><strong>Cargo:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Cargo del Destinatario]"></span></p>
+                        <p><strong>Ciudad:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Ciudad]"></span></p>
+                    </div>
+                    <div class="leading-relaxed">
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="Tengo el agrado de dirigirme a usted para [exponer el motivo del oficio, por ejemplo, solicitar, informar, invitar, etc.]."></p>
+                        <p class="mt-4" contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="Sin otro particular, me suscribo de usted."></p>
+                        <p class="mt-8">Atentamente,</p>
+                        <p class="mt-4" contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Firma]"></p>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre Completo]"></p>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Cargo]"></p>
+                    </div>
+                </div>
+            `,
+            informe: `
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-center mb-6">INFORME N.º <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número]"></span></h1>
+                    <div class="space-y-2 text-sm mb-6">
+                        <p><strong>A:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre del Destinatario]"></span></p>
+                        <p><strong>DE:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre del Remitente]"></span></p>
+                        <p><strong>FECHA:</strong> <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                        <p><strong>ASUNTO:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Asunto del Informe]"></span></p>
+                    </div>
+                    <hr class="my-6 border-t-2 border-gray-300">
+                    <div class="leading-relaxed">
+                        <h2 class="text-xl font-bold mb-2">I. INTRODUCCIÓN</h2>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="El presente informe tiene como objetivo [describir el propósito del informe]. Se ha realizado una [descripción de la metodología, por ejemplo, investigación, análisis, etc.]."></p>
+                        <h2 class="text-xl font-bold mt-6 mb-2">II. ANTECEDENTES</h2>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Descripción de los antecedentes relevantes que llevaron a la elaboración del informe]."></p>
+                        <h2 class="text-xl font-bold mt-6 mb-2">III. ANÁLISIS Y DESARROLLO</h2>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Exposición de los hallazgos, datos y análisis detallado]."></p>
+                        <h2 class="text-xl font-bold mt-6 mb-2">IV. CONCLUSIONES</h2>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Resumen de los resultados y conclusiones principales]."></p>
+                        <h2 class="text-xl font-bold mt-6 mb-2">V. RECOMENDACIONES</h2>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Propuestas de acciones a seguir basadas en las conclusiones]."></p>
+                        <p class="mt-8" contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="Es todo cuanto informo para su conocimiento y fines pertinentes."></p>
+                        <p class="mt-4" contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="Atentamente,"></p>
+                        <p class="mt-4" contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Firma]"></p>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre Completo]"></p>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Cargo]"></p>
+                    </div>
+                </div>
+            `,
+            acta: `
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-center mb-6">ACTA N.º <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Acta]"></span></h1>
+                    <div class="text-center mb-6">
+                        <p class="text-lg font-semibold">ACTA DE <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Motivo de la Reunión]"></span></p>
+                        <p>En la ciudad de <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Ciudad]"></span>, siendo las <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Hora de inicio]"></span> del día <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span>, se reunieron en <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Lugar de la reunión]"></span>, las siguientes personas:</p>
+                    </div>
+                    <div class="leading-relaxed mb-6">
+                        <h2 class="text-xl font-bold mb-2">PARTICIPANTES</h2>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Lista de participantes con sus cargos]"></p>
+                    </div>
+                    <div class="leading-relaxed mb-6">
+                        <h2 class="text-xl font-bold mb-2">DESARROLLO DE LA REUNIÓN</h2>
+                        <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Descripción detallada de los temas discutidos, propuestas, y acuerdos tomados]."></p>
+                    </div>
+                    <div class="leading-relaxed mb-6">
+                        <h2 class="text-xl font-bold mb-2">CONCLUSIONES Y ACUERDOS</h2>
+                        <p>Se llegó a los siguientes acuerdos:</p>
+                        <ul class="list-disc list-inside mt-2">
+                            <li contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Acuerdo 1]"></li>
+                            <li contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Acuerdo 2]"></li>
+                            <li contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Acuerdo 3]"></li>
+                        </ul>
+                    </div>
+                    <div class="text-center mt-8">
+                        <p>Siendo las <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Hora de finalización]"></span>, se da por terminada la reunión. En señal de conformidad, firman los presentes.</p>
+                        <div class="flex justify-around mt-8">
+                            <div class="text-center">
+                                <p>_________________________</p>
+                                <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Firma y Nombre 1]"></p>
+                            </div>
+                            <div class="text-center">
+                                <p>_________________________</p>
+                                <p contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Firma y Nombre 2]"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            solicitud: `
+                <div class="p-6">
+                    <div class="text-sm mb-6">
+                        <p><strong>Sumilla:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Resumen de la solicitud]"></span></p>
+                        <p class="mt-2"><strong>Señor(a):</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Cargo del Destinatario]"></span></p>
+                        <p><strong>Asunto:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Asunto de la solicitud]"></span></p>
+                    </div>
+                    <hr class="my-6 border-t-2 border-gray-300">
+                    <div class="leading-relaxed mb-6">
+                        <p>Yo, <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Nombre Completo del Solicitante]"></span>, con identificación N.º <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de Identificación]"></span>, de profesión <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Profesión u Ocupación]"></span>, con domicilio en <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Dirección]"></span>, ante usted, con el debido respeto me presento y expongo:</p>
+                        <p class="mt-4" contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="Que, [exponer los hechos de manera clara y concisa que justifican la solicitud]."></p>
+                        <p class="mt-4" contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="Por lo tanto, a usted, Señor(a), pido que acceda a mi solicitud por ser de justicia."></p>
+                    </div>
+                    <div class="text-sm mt-8">
+                        <p><span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Ciudad]"></span>, <span contenteditable="true" class="editable-cell" data-placeholder="Día">${day}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Mes">${month}</span>/<span contenteditable="true" class="editable-cell" data-placeholder="Año">${year}</span></p>
+                        <p class="mt-8">_________________________</p>
+                        <p><strong><span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Firma y Nombre del Solicitante]"></span></strong></p>
+                        <p><strong>DNI N.º:</strong> <span contenteditable="true" class="editable-placeholder editable-cell" data-placeholder="[Número de DNI]"></span></p>
+                    </div>
+                </div>
+            `
+        };
+
+        const addRowToTable = (tableId) => {
+            const tableBody = document.querySelector(`#${tableId} tbody`);
+            if (!tableBody) return;
+
+            const newRow = document.createElement('tr');
+            if (['items-table', 'purchase-table', 'sales-table'].includes(tableId)) {
+                newRow.innerHTML = `
+                    <td class="p-2 border-b editable-cell" contenteditable="true" data-placeholder=""></td>
+                    <td class="p-2 border-b editable-cell" contenteditable="true" data-field="quantity" inputmode="numeric"></td>
+                    <td class="p-2 border-b editable-cell" contenteditable="true" data-field="price" inputmode="decimal"></td>
+                    <td class="p-2 border-b editable-cell font-semibold" data-field="total" contenteditable="false">0.00</td>
+                `;
+            } else if (tableId === 'products-table') { // Guía de Remisión
+                newRow.innerHTML = `
+                    <td class="p-2 border-b editable-cell" contenteditable="true" data-placeholder=""></td>
+                    <td class="p-2 border-b editable-cell" contenteditable="true" data-placeholder=""></td>
+                `;
+            }
+            
+            tableBody.appendChild(newRow);
+        };
+
+        const calculateTotals = () => {
+            const table = contentEditor.querySelector('table');
+            if (!table || !table.querySelector('[data-field="quantity"]')) return;
+            
+            const rows = table.querySelectorAll('tbody tr');
+            let subtotal = 0;
+
+            rows.forEach(row => {
+                const quantityCell = row.querySelector('[data-field="quantity"]');
+                const priceCell = row.querySelector('[data-field="price"]');
+                const totalCell = row.querySelector('[data-field="total"]');
+
+                if (quantityCell && priceCell && totalCell) {
+                    const quantity = parseFloat(quantityCell.textContent.replace(',', '.').trim()) || 0;
+                    const price = parseFloat(priceCell.textContent.replace(',', '.').trim()) || 0;
+                    const rowTotal = quantity * price;
+                    
+                    totalCell.textContent = rowTotal.toFixed(2);
+                    subtotal += rowTotal;
+                }
+            });
+
+            const subtotalField = contentEditor.querySelector('[data-field="subtotal"]');
+            const taxesField = contentEditor.querySelector('[data-field="taxes"]');
+            const grandTotalField = contentEditor.querySelector('[data-field="grand-total"]');
+
+            if (subtotalField) {
+                subtotalField.textContent = subtotal.toFixed(2);
+                const taxes = parseFloat((taxesField ? taxesField.textContent : '0').replace('$', '').replace(',', '.').trim()) || 0;
+                const grandTotal = subtotal + taxes;
+                if (grandTotalField) {
+                    grandTotalField.textContent = grandTotal.toFixed(2);
+                }
+            } else if (grandTotalField) {
+                grandTotalField.textContent = subtotal.toFixed(2);
+            }
+        };
+
+        const downloadDocument = () => {
+            const docTitle = documentTitle.value.trim() || 'documento';
+            const htmlContent = contentEditor.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${docTitle.toLowerCase().replace(/ /g, '_')}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
+        // Evento para cargar la plantilla seleccionada
+        templateSelect.addEventListener('change', (event) => {
+            const selectedTemplate = event.target.value;
+            if (selectedTemplate !== 'none') {
+                contentEditor.innerHTML = templates[selectedTemplate];
+                documentTitle.value = selectedTemplate.charAt(0).toUpperCase() + selectedTemplate.slice(1).replace(/_/g, ' ');
+            } else {
+                contentEditor.innerHTML = '<p class="text-gray-500">Selecciona una plantilla para comenzar a editar...</p>';
+                documentTitle.value = '';
+            }
+        });
+
+        // Manejo de eventos delegados para las tablas
+        contentEditor.addEventListener('click', (event) => {
+            if (event.target.classList.contains('add-row-btn')) {
+                const tableId = event.target.dataset.tableId;
+                addRowToTable(tableId);
+            }
+        });
+
+        contentEditor.addEventListener('input', (event) => {
+            if (event.target.hasAttribute('data-field') && (event.target.dataset.field === 'quantity' || event.target.dataset.field === 'price' || event.target.dataset.field === 'taxes')) {
+                calculateTotals();
+            }
+        });
+
+        // Evento del botón de descarga
+        downloadBtn.addEventListener('click', downloadDocument);
+    </script>
+</body>
+</html>
