@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Registro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-azul-profundo: #1A2F6C;
+                --color-azul-celeste-vibrante: #3DC1D3;
+                --color-beige-calido: #F5E6D3;
+                --color-arena-dorada: #D4B485;
+                --color-azul-electrico-claro: #0096C7;
+                --color-bianco-roto: #F9F7F2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[var(--color-bianco-roto)] flex items-center justify-center min-h-screen">
+    <div class="bg-[var(--color-beige-calido)] p-8 rounded-lg shadow-md w-full max-w-sm">
+        <h1 class="text-3xl font-bold mb-6 text-center text-[var(--color-azul-profundo)]">Registrarse</h1>
+        <form method="POST" action="{{ url_for('register') }}" class="space-y-4">
+            <div>
+                <label for="username" class="block text-sm font-medium text-[var(--color-azul-profundo)]">Usuario:</label>
+                <input type="text" id="username" name="username" required class="mt-1 block w-full px-3 py-2 border border-[var(--color-arena-dorada)] rounded-md shadow-sm focus:outline-none focus:ring-[var(--color-azul-electrico-claro)] focus:border-[var(--color-azul-electrico-claro)]">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-[var(--color-azul-profundo)]">Contraseña:</label>
+                <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-[var(--color-arena-dorada)] rounded-md shadow-sm focus:outline-none focus:ring-[var(--color-azul-electrico-claro)] focus:border-[var(--color-azul-electrico-claro)]">
+            </div>
+            <button type="submit" class="w-full bg-[var(--color-azul-electrico-claro)] text-white py-2 px-4 rounded-md hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300">Registrarse</button>
+        </form>
+        <p class="mt-4 text-center text-sm text-[var(--color-azul-profundo)]">
+            ¿Ya tienes cuenta? <a href="{{ url_for('login') }}" class="font-medium text-[var(--color-azul-profundo)] hover:text-[var(--color-azul-celeste-vibrante)]">Inicia sesión</a>
+        </p>
+    </div>
+</body>
+</html>

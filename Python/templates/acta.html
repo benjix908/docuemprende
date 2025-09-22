@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acta - DocuEmprende</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5DC; /* beige cálido */
+        }
+        .main-content {
+            margin-top: 64px;
+            padding-left: 256px;
+        }
+        .sidebar {
+            width: 256px;
+            background-color: #0A2342; /* azul profundo */
+            transition: transform 0.3s ease-in-out;
+        }
+        .menu-item:hover {
+            background-color: #153C6E; /* Sombra de azul profundo */
+            border-radius: 0.5rem;
+        }
+        .menu-item.active, .menu-item.selected {
+            background-color: #7DF9FF; /* azul electrico claro */
+        }
+        .menu-item.active .icon, .menu-item.active span,
+        .menu-item.selected .icon, .menu-item.selected span {
+            color: #0A2342; /* azul profundo */
+        }
+        .menu-item {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                padding-left: 0;
+            }
+            .sidebar.mobile-hidden {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Overrides para los colores de Tailwind */
+        .bg-white { background-color: #F8F8FF; /* bianco roto */ }
+        .text-white { color: #F8F8FF; /* bianco roto */ }
+        .text-gray-400 { color: #F8F8FF; /* bianco roto */ }
+        .text-gray-600 { color: #4F5965; }
+        .text-gray-700 { color: #4F5965; }
+        .text-gray-800 { color: #2D3944; }
+
+        .text-blue-500 { color: #7DF9FF; }
+        .hover\:text-blue-500:hover { color: #7DF9FF; }
+
+        .bg-green-500 { background-color: #00A3FF; /* azul celeste vibrante */ }
+        .hover\:bg-green-600:hover { background-color: #008FE6; }
+        .focus\:ring-green-500:focus { --tw-ring-color: #00A3FF; }
+
+        .bg-red-500 { background-color: #00A3FF; /* azul celeste vibrante */ }
+        .hover\:bg-red-600:hover { background-color: #008FE6; }
+        .focus\:ring-red-500:focus { --tw-ring-color: #00A3FF; }
+
+        .bg-yellow-500 { background-color: #C8A25F; /* arena dorada */ }
+        .hover\:bg-yellow-600:hover { background-color: #B89350; }
+        .focus\:ring-yellow-500:focus { --tw-ring-color: #C8A25F; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 transform md:relative md:translate-x-0 mobile-hidden z-50">
+        <div class="h-full flex flex-col justify-between">
+            <div class="px-6 py-4">
+                <h1 class="text-white text-3xl font-bold rounded-lg mb-8">DocuEmprende</h1>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('facturas') }}" class="menu-item active flex items-center p-3 text-white">
+                        <i class="fas fa-receipt mr-3 icon"></i>
+                        <span>Facturas</span>
+                    </a>
+                    <a href="{{ url_for('guias_de_remision') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-truck-loading mr-3 icon"></i>
+                        <span>Guías de Remisión</span>
+                    </a>
+                    <a href="{{ url_for('recibos_de_ingresos') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-money-check-alt mr-3 icon"></i>
+                        <span>Recibos de Ingresos</span>
+                    </a>
+                    <a href="{{ url_for('boleta_de_venta') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-file-invoice mr-3 icon"></i>
+                        <span>Boleta de Venta</span>
+                    </a>
+                    <a href="{{ url_for('orden_de_compra') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-shopping-cart mr-3 icon"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                    <a href="{{ url_for('nota_de_credito') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-credit-card mr-3 icon"></i>
+                        <span>Nota de Crédito</span>
+                    </a>
+                    <a href="{{ url_for('acta') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-file-alt mr-3 icon"></i>
+                        <span>Acta</span>
+                    </a>
+                    <a href="{{ url_for('memorando') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-sticky-note mr-3 icon"></i>
+                        <span>Memorando</span>
+                    </a>
+                    <a href="{{ url_for('oficio') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-building mr-3 icon"></i>
+                        <span>Oficio</span>
+                    </a>
+                    <a href="{{ url_for('informe') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-chart-bar mr-3 icon"></i>
+                        <span>Informe</span>
+                    </a>
+                    <a href="{{ url_for('solicitud') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-paper-plane mr-3 icon"></i>
+                        <span>Solicitud</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col main-content">
+        <!-- Desktop Header -->
+        <header class="bg-white shadow p-4 hidden md:flex items-center fixed w-full top-0 z-30 justify-between">
+            <h1 class="text-2xl font-bold">Acta</h1>
+            <nav class="flex-1 flex justify-center space-x-6">
+                <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Home</a>
+                <a href="{{ url_for('dinerito') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Dinerito</a>
+                <a href="{{ url_for('documentos') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Documentos de mi negocio</a>
+                <a href="{{ url_for('inventario') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Inventario</a>
+                <a href="{{ url_for('cuenta') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">User</a>
+                <a href="{{ url_for('logout') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Cerrar Sesión</a>
+            </nav>
+            <div class="w-1/4"></div>
+        </header>
+
+        <!-- Mobile Header -->
+        <header class="bg-white shadow p-4 flex md:hidden items-center fixed w-full top-0 z-40 justify-between">
+            <button id="menu-btn" class="text-gray-600 text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="text-2xl font-bold flex-grow text-center">Acta</h1>
+        </header>
+
+        <main class="flex-1 p-8 pt-20 md:pt-8">
+            <div class="container mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Generador de Actas</h2>
+                    <div id="message-box" class="hidden mb-4 p-3 rounded-md text-sm text-white font-semibold"></div>
+                    <form id="acta-form" class="space-y-4">
+                        <div>
+                            <label for="acta_number" class="block text-gray-700 font-medium">Número de Acta:</label>
+                            <input type="text" id="acta_number" name="acta_number" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="acta_date" class="block text-gray-700 font-medium">Fecha:</label>
+                            <input type="date" id="acta_date" name="acta_date" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="meeting_topic" class="block text-gray-700 font-medium">Tema de la Reunión:</label>
+                            <input type="text" id="meeting_topic" name="meeting_topic" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="participants" class="block text-gray-700 font-medium">Participantes (separados por coma):</label>
+                            <textarea id="participants" name="participants" rows="2" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label for="agreements" class="block text-gray-700 font-medium">Acuerdos:</label>
+                            <textarea id="agreements" name="agreements" rows="5" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                        </div>
+
+                        <div class="flex space-x-4">
+                            <button type="submit" id="save-acta-btn" class="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                                Guardar Acta
+                            </button>
+                            <button type="button" id="generate-pdf-btn" class="w-full bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                                Generar PDF
+                            </button>
+                            <button type="button" id="email-acta-btn" class="w-full bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors duration-200">
+                                Enviar por Correo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menu-btn');
+            const form = document.getElementById('acta-form');
+            const saveBtn = document.getElementById('save-acta-btn');
+            const generatePdfBtn = document.getElementById('generate-pdf-btn');
+            const emailBtn = document.getElementById('email-acta-btn');
+            const messageBox = document.getElementById('message-box');
+
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-hidden');
+            });
+
+            // Set active menu item based on current page
+            const currentPath = window.location.pathname.split('/').pop();
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                const itemPath = item.href.split('/').pop();
+                if (itemPath === currentPath) {
+                    item.classList.add('selected');
+                }
+                item.addEventListener('mouseover', () => {
+                    item.classList.add('active');
+                });
+                item.addEventListener('mouseout', () => {
+                    if (!item.classList.contains('selected')) {
+                        item.classList.remove('active');
+                    }
+                });
+            });
+
+            function showMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
+                if (type === 'success') {
+                    messageBox.classList.add('bg-green-500');
+                } else {
+                    messageBox.classList.add('bg-red-500');
+                }
+                setTimeout(() => messageBox.classList.add('hidden'), 5000);
+            }
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                saveBtn.disabled = true;
+
+                const data = {
+                    acta_number: document.getElementById('acta_number').value,
+                    acta_date: document.getElementById('acta_date').value,
+                    meeting_topic: document.getElementById('meeting_topic').value,
+                    participants: document.getElementById('participants').value,
+                    agreements: document.getElementById('agreements').value
+                };
+
+                fetch('/save_acta', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        showMessage('¡Acta guardada con éxito!', 'success');
+                    } else {
+                        showMessage('Error al guardar el acta: ' + result.error, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('Error de conexión. Inténtalo de nuevo.', 'error');
+                })
+                .finally(() => {
+                    saveBtn.disabled = false;
+                });
+            });
+
+            generatePdfBtn.addEventListener('click', () => {
+                window.jsPDF = window.jspdf.jsPDF;
+                const doc = new jsPDF();
+
+                const actaNumber = document.getElementById('acta_number').value;
+                const actaDate = document.getElementById('acta_date').value;
+                const meetingTopic = document.getElementById('meeting_topic').value;
+                const participants = document.getElementById('participants').value;
+                const agreements = doc.splitTextToSize(document.getElementById('agreements').value, 180);
+
+                doc.setFontSize(22);
+                doc.text("Acta de Reunión", 14, 20);
+                doc.setFontSize(12);
+                doc.text(`Número de Acta: ${actaNumber}`, 14, 30);
+                doc.text(`Fecha: ${actaDate}`, 14, 37);
+                doc.text(`Tema de la Reunión: ${meetingTopic}`, 14, 44);
+                doc.text(`Participantes: ${participants}`, 14, 51);
+                doc.text("Acuerdos:", 14, 58);
+                doc.text(agreements, 14, 65);
+
+                doc.save(`Acta_${actaNumber}.pdf`);
+            });
+
+            emailBtn.addEventListener('click', () => {
+                const subject = `Acta Nro. ${document.getElementById('acta_number').value}`;
+                const body = `Hola,\nAdjunto el acta con número ${document.getElementById('acta_number').value} generada en Cuentas Claras.`;
+                window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            });
+        });
+    </script>
+</body>
+</html>

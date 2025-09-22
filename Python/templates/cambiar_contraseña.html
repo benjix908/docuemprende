@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar Contraseña - Mi Negocio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-azul-profundo: #1A2F6C;
+                --color-azul-celeste-vibrante: #3DC1D3;
+                --color-beige-calido: #F5E6D3;
+                --color-arena-dorada: #D4B485;
+                --color-azul-electrico-claro: #0096C7;
+                --color-bianco-roto: #F9F7F2;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-[var(--color-bianco-roto)] min-h-screen flex flex-col">
+
+    <nav class="bg-[var(--color-azul-profundo)] shadow-md p-4 flex justify-between items-center">
+        <div class="text-2xl font-bold text-white">
+            DocuEmprende
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="inventario.html" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Home</a>
+            <a href="#" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Dinerito</a>
+            <a href="#" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Documentos de mi negocio</a>
+            <a href="inventario.html" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Inventario</a>
+            <a href="cuenta.html" class="text-[var(--color-azul-celeste-vibrante)] font-semibold">User</a>
+            <a href="#" class="bg-[var(--color-azul-electrico-claro)] text-white px-4 py-2 rounded-full font-semibold hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Cerrar Sesión</a>
+        </div>
+    </nav>
+    
+    <div class="flex-grow flex items-center justify-center p-6 mt-16">
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+            <h2 class="text-2xl font-bold text-center text-[var(--color-azul-profundo)] mb-6">CAMBIAR CONTRASEÑA</h2>
+            
+            <div class="bg-[var(--color-beige-calido)] p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-[var(--color-azul-profundo)] mb-4">Cambiar tu Contraseña</h3>
+                <form id="passwordForm" class="space-y-4">
+                    <div>
+                        <label for="current-password" class="block text-[var(--color-azul-profundo)] font-semibold mb-1">Contraseña Actual</label>
+                        <div class="relative">
+                            <input type="password" id="current-password" class="w-full p-2 border border-gray-300 rounded-lg pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-arena-dorada)]">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-sm text-[var(--color-azul-electrico-claro)] hover:text-[var(--color-azul-celeste-vibrante)]" onclick="togglePassword('current-password')">Ver</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="new-password" class="block text-[var(--color-azul-profundo)] font-semibold mb-1">Nueva Contraseña</label>
+                        <div class="relative">
+                            <input type="password" id="new-password" class="w-full p-2 border border-gray-300 rounded-lg pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-arena-dorada)]">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-sm text-[var(--color-azul-electrico-claro)] hover:text-[var(--color-azul-celeste-vibrante)]" onclick="togglePassword('new-password')">Ver</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="confirm-password" class="block text-[var(--color-azul-profundo)] font-semibold mb-1">Confirmar Nueva Contraseña</label>
+                        <div class="relative">
+                            <input type="password" id="confirm-password" class="w-full p-2 border border-gray-300 rounded-lg pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-arena-dorada)]">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-sm text-[var(--color-azul-electrico-claro)] hover:text-[var(--color-azul-celeste-vibrante)]" onclick="togglePassword('confirm-password')">Ver</span>
+                        </div>
+                    </div>
+                    <p class="text-red-500 font-medium text-sm mt-2 hidden" id="errorMessage"></p>
+                    <button type="submit" class="w-full bg-[var(--color-azul-electrico-claro)] text-white font-medium py-2 rounded-lg hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out mt-4">Actualizar Contraseña</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleButton = passwordInput.nextElementSibling;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleButton.textContent = 'Ocultar';
+            } else {
+                passwordInput.type = 'password';
+                toggleButton.textContent = 'Ver';
+            }
+        }
+
+        document.getElementById('passwordForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Simulación de la contraseña almacenada
+            const storedPassword = "micontraseña123";
+
+            if (currentPassword !== storedPassword) {
+                errorMessage.textContent = 'La contraseña actual es incorrecta.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (newPassword === currentPassword) {
+                errorMessage.textContent = 'La nueva contraseña debe ser distinta a la actual.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                errorMessage.textContent = 'La nueva contraseña no coincide con la confirmación.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Si todo es correcto
+            errorMessage.style.display = 'none';
+            alert('¡Contraseña actualizada con éxito!');
+        });
+    </script>
+</body>
+</html>

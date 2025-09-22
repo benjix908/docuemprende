@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boleta de Venta - DocuEmprende</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                /* Colores solicitados por el usuario */
+                --color-sidebar-bg: #191970; /* Azul Profundo */
+                --color-sidebar-active-bg: #90BFFF; /* Azul Eléctrico Claro */
+                --color-header-bg: #90BFFF; /* Azul Eléctrico Claro */
+                --color-fondo-principal: #F5EFE6; /* Beige Cálido */
+                --color-texto-oscuro: #212529; /* Color de texto predeterminado */
+                --color-borde-gris: #DCDCDC; /* Gris para bordes */
+                --color-azul-claro: #00BFFF; /* Azul Celeste Vibrante */
+                --color-verde-ok: #3A8E02; /* Verde predeterminado */
+                --color-rojo-cancelar: #FF3B30; /* Rojo predeterminado */
+                --color-naranja-ok: #D4A373; /* Arena Dorada */
+                --color-bianco-roto: #F5F5F5; /* Blanco Roto */
+            }
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-fondo-principal);
+        }
+        .main-content {
+            transition: padding-left 0.3s ease-in-out;
+        }
+        .sidebar {
+            width: 256px;
+            background-color: var(--color-sidebar-bg);
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (min-width: 768px) {
+            .main-content {
+                padding-left: 256px;
+            }
+        }
+        .item-row input, .item-row button {
+            border-radius: 0.5rem;
+        }
+        .input-field {
+            border: 1px solid var(--color-borde-gris);
+            background-color: var(--color-bianco-roto);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-blue {
+            background-color: var(--color-azul-claro);
+            color: white;
+        }
+        .btn-blue:hover {
+            background-color: #0099e5;
+        }
+        .btn-green {
+            background-color: var(--color-verde-ok);
+            color: white;
+        }
+        .btn-green:hover {
+            background-color: #317802;
+        }
+        .btn-red {
+            background-color: var(--color-rojo-cancelar);
+            color: white;
+        }
+        .btn-red:hover {
+            background-color: #D22F26;
+        }
+        .btn-orange {
+            background-color: var(--color-naranja-ok);
+            color: white;
+        }
+        .btn-orange:hover {
+            background-color: #C28F5A;
+        }
+        .header {
+            background-color: var(--color-header-bg);
+        }
+        .sidebar-item-active {
+            background-color: var(--color-sidebar-active-bg);
+            color: var(--color-texto-oscuro);
+        }
+        .sidebar-item {
+            color: #FFFFFF;
+        }
+        .sidebar-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <!-- Sidebar -->
+    <!-- Los enlaces del sidebar han sido desactivados ya que el HTML es un archivo único sin servidor -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-50 shadow-lg text-white">
+        <div class="h-full flex flex-col justify-between p-6">
+            <div>
+                <h1 class="text-3xl font-bold mb-8 text-center text-white">DocuEmprende</h1>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('facturas') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-receipt mr-3"></i>
+                        <span>Facturas</span>
+                    </a>
+                    <a href="{{ url_for('guias_de_remision') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-truck-loading mr-3"></i>
+                        <span>Guías de Remisión</span>
+                    </a>
+                    <a href="{{ url_for('recibos_de_ingresos') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-money-check-alt mr-3"></i>
+                        <span>Recibos de Ingresos</span>
+                    </a>
+                    <a href="{{ url_for('boleta_de_venta') }}" class="flex items-center p-3 rounded-lg sidebar-item-active">
+                        <i class="fas fa-file-invoice mr-3"></i>
+                        <span>Boleta de Venta</span>
+                    </a>
+                    <a href="{{ url_for('orden_de_compra') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-shopping-cart mr-3"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                    <a href="{{ url_for('nota_de_credito') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-credit-card mr-3"></i>
+                        <span>Nota de Crédito</span>
+                    </a>
+                    <a href="{{ url_for('acta') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-file-alt mr-3"></i>
+                        <span>Acta</span>
+                    </a>
+                    <a href="{{ url_for('memorando') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-sticky-note mr-3"></i>
+                        <span>Memorando</span>
+                    </a>
+                    <a href="{{ url_for('oficio') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-building mr-3"></i>
+                        <span>Oficio</span>
+                    </a>
+                    <a href="{{ url_for('informe') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-chart-bar mr-3"></i>
+                        <span>Informe</span>
+                    </a>
+                    <a href="{{ url_for('solicitud') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-paper-plane mr-3"></i>
+                        <span>Solicitud</span>
+                    </a>
+                </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col main-content">
+        <!-- Header -->
+        <header class="header p-4 flex items-center justify-between shadow-sm fixed w-full top-0 md:left-64 z-40">
+            <button id="menu-btn" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800">Boleta de Venta</h1>
+            <nav class="hidden md:flex items-center space-x-4">
+                <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Home</a>
+                <a href="{{ url_for('dinerito') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Dinerito</a>
+                <a href="{{ url_for('documentos') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Documentos de mi negocio</a>
+                <a href="{{ url_for('inventario') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Inventario</a>
+                <a href="{{ url_for('cuenta') }}" class="text-gray-600 hover:text-blue-500 font-semibold">User</a>
+                <a href="{{ url_for('logout') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Cerrar Sesión</a>
+            </nav>
+        </header>
+
+        <!-- Main section -->
+        <main class="flex-1 p-6 md:p-10 overflow-auto mt-16 md:mt-20">
+            <div class="w-full max-w-4xl mx-auto">
+                <div class="bg-[var(--color-bianco-roto)] p-8 rounded-xl shadow-md w-full">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Generar Boleta de Venta</h2>
+                    <form id="boletaVentaForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="boleta_number" class="block text-sm font-medium text-gray-700">N° de Boleta</label>
+                                <input type="text" id="boleta_number" name="boleta_number" required class="mt-1 block w-full input-field">
+                            </div>
+                            <div>
+                                <label for="boleta_date" class="block text-sm font-medium text-gray-700">Fecha</label>
+                                <input type="date" id="boleta_date" name="boleta_date" required class="mt-1 block w-full input-field">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="client_name" class="block text-sm font-medium text-gray-700">Nombre del Cliente</label>
+                            <input type="text" id="client_name" name="client_name" class="mt-1 block w-full input-field">
+                        </div>
+
+                        <div id="items-container" class="space-y-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Detalles del Ítem</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 item-row">
+                                <input type="text" placeholder="Descripción" class="col-span-2 input-field item-description">
+                                <input type="number" step="0.01" placeholder="Cantidad" class="input-field item-quantity">
+                                <input type="number" step="0.01" placeholder="Precio" class="input-field item-price">
+                            </div>
+                        </div>
+                        <button type="button" id="addItemBtn" class="btn btn-blue w-full">
+                            Añadir Ítem
+                            <i class="fas fa-plus ml-2"></i>
+                        </button>
+
+                        <div class="pt-6 space-y-4">
+                            <button type="submit" class="btn btn-green w-full">Guardar Boleta</button>
+                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                                <label for="file_upload" class="flex-1 cursor-pointer btn btn-orange flex items-center justify-center">
+                                    <i class="fas fa-paperclip mr-2"></i>
+                                    Subir Archivo Adjunto
+                                </label>
+                                <input type="file" id="file_upload" class="hidden">
+                                <button type="button" id="generate-pdf" class="flex-1 btn btn-red flex items-center justify-center">
+                                    <i class="fas fa-file-pdf mr-2"></i>
+                                    Generar PDF
+                                </button>
+                            </div>
+                            <div id="uploaded-files-container" class="p-4 border border-gray-200 rounded-lg bg-gray-50 hidden">
+                                <h4 class="text-sm font-semibold mb-2">Archivos adjuntos:</h4>
+                                <ul id="files-list"></ul>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para mensajes -->
+    <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-[var(--color-bianco-roto)] p-6 rounded-lg shadow-xl w-80 text-center">
+            <p id="modal-text" class="text-lg font-semibold mb-4"></p>
+            <button id="modal-close-btn" class="btn btn-green">OK</button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-[var(--color-bianco-roto)] p-6 rounded-lg shadow-xl w-80 text-center">
+            <p id="confirmation-text" class="text-lg font-semibold mb-4"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-btn" class="btn btn-red">Borrar</button>
+                <button id="cancel-btn" class="btn btn-blue">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menu-btn');
+            const itemsContainer = document.getElementById('items-container');
+            const addItemBtn = document.getElementById('addItemBtn');
+            const boletaVentaForm = document.getElementById('boletaVentaForm');
+            const fileUploadInput = document.getElementById('file_upload');
+            const uploadedFilesContainer = document.getElementById('uploaded-files-container');
+            const filesList = document.getElementById('files-list');
+            const generatePdfBtn = document.getElementById('generate-pdf');
+
+            // Modales
+            const messageModal = document.getElementById('message-modal');
+            const modalText = document.getElementById('modal-text');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const confirmationText = document.getElementById('confirmation-text');
+            const confirmBtn = document.getElementById('confirm-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+
+            // Toggle sidebar en móviles
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            // Función para mostrar mensajes modales
+            function showMessage(message, type) {
+                modalText.textContent = message;
+                modalCloseBtn.className = 'btn ' + (type === 'success' ? 'btn-green' : 'btn-red');
+                messageModal.classList.remove('hidden');
+                modalCloseBtn.onclick = () => messageModal.classList.add('hidden');
+            }
+
+            // Función para mostrar modal de confirmación
+            function showConfirmation(message, onConfirm) {
+                confirmationText.textContent = message;
+                confirmationModal.classList.remove('hidden');
+                confirmBtn.onclick = () => {
+                    onConfirm();
+                    confirmationModal.classList.add('hidden');
+                };
+                cancelBtn.onclick = () => {
+                    confirmationModal.classList.add('hidden');
+                };
+            }
+
+            // --- Lógica para añadir ítems ---
+            addItemBtn.addEventListener('click', () => {
+                const itemRow = document.createElement('div');
+                itemRow.className = 'grid grid-cols-1 sm:grid-cols-4 gap-4 item-row';
+                itemRow.innerHTML = `
+                    <input type="text" placeholder="Descripción" class="col-span-2 input-field item-description">
+                    <input type="number" step="0.01" placeholder="Cantidad" class="input-field item-quantity">
+                    <input type="number" step="0.01" placeholder="Precio" class="input-field item-price">
+                    <button type="button" class="btn btn-red remove-item-btn">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                itemsContainer.appendChild(itemRow);
+                itemRow.querySelector('.remove-item-btn').addEventListener('click', () => {
+                    itemRow.remove();
+                });
+            });
+
+            // Re-bind listeners for existing remove buttons
+            document.querySelectorAll('.remove-item-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    button.closest('.item-row').remove();
+                });
+            });
+
+            // --- Lógica para guardar la boleta (simulado) ---
+            boletaVentaForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                // En una aplicación real, esta función enviaría datos a un servidor.
+                // Aquí, simplemente simulamos el guardado mostrando los datos en la consola.
+                const boletaData = {
+                    boleta_number: document.getElementById('boleta_number').value,
+                    boleta_date: document.getElementById('boleta_date').value,
+                    client_name: document.getElementById('client_name').value,
+                    items: []
+                };
+                document.querySelectorAll('.item-row').forEach(row => {
+                    const description = row.querySelector('.item-description').value;
+                    const quantity = parseFloat(row.querySelector('.item-quantity').value);
+                    const price = parseFloat(row.querySelector('.item-price').value);
+                    if (description && !isNaN(quantity) && !isNaN(price)) {
+                        boletaData.items.push({ description, quantity, price });
+                    }
+                });
+
+                console.log("Datos de la boleta listos para enviar al servidor:", boletaData);
+                showMessage('Boleta guardada con éxito (simulado).', 'success');
+            });
+
+            // --- Lógica para subir archivos (simulado) ---
+            fileUploadInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) { return; }
+                
+                // Simulación de subida de archivo
+                console.log("Archivo listo para subir:", file.name, file.size, file.type);
+                showMessage(`Archivo "${file.name}" subido con éxito (simulado).`, 'success');
+                
+                // Simulación de carga de archivos subidos
+                uploadedFilesContainer.classList.remove('hidden');
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 transition-colors';
+                li.innerHTML = `
+                    <span class="text-gray-800 flex-1 truncate mr-2">${file.name}</span>
+                    <div class="flex space-x-2">
+                        <button onclick="showMessage('Función de envío de correo no disponible.', 'info')" class="btn btn-blue text-sm px-3 py-1">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                        <button onclick="this.closest('li').remove(); if(filesList.children.length === 0) uploadedFilesContainer.classList.add('hidden');" class="btn btn-red text-sm px-3 py-1">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                filesList.appendChild(li);
+            });
+
+            // --- Lógica para generar PDF (simulado) ---
+            generatePdfBtn.addEventListener('click', () => {
+                showMessage('Generación de PDF no disponible. Se requiere un servidor de back-end.', 'info');
+            });
+
+            // Lógica para cargar datos al iniciar (no aplica en un archivo estático)
+            // La función se mantiene vacía para evitar errores de referencia.
+            function loadData() {
+                // No hay datos para cargar desde un servidor en este archivo estático.
+                console.log("Aplicación lista. Comienza a ingresar los datos de tu boleta.");
+            }
+            loadData();
+        });
+    </script>
+</body>
+</html>

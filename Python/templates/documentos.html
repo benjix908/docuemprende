@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentos de Mi Negocio - DocuEmprende</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-azul-profundo: #1A2F6C;
+                --color-azul-celeste-vibrante: #3DC1D3;
+                --color-beige-calido: #F5E6D3;
+                --color-arena-dorada: #D4B485;
+                --color-azul-electrico-claro: #0096C7;
+                --color-bianco-roto: #F9F7F2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[var(--color-bianco-roto)] min-h-screen flex flex-col">
+    <nav class="bg-[var(--color-azul-profundo)] shadow-md p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-50">
+        <div class="text-2xl font-bold text-white">
+            DocuEmprende
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="/home" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Home</a>
+            <a href="/dinerito" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Dinerito</a>
+            <a href="/documentos" class="text-[var(--color-azul-celeste-vibrante)] font-semibold">Documentos de mi negocio</a>
+            <a href="/inventario" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Inventario</a>
+            <a href="/cuenta" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">User</a>
+            <a href="/logout" class="bg-[var(--color-azul-electrico-claro)] text-white px-4 py-2 rounded-full font-semibold hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Cerrar Sesión</a>
+        </div>
+    </nav>
+    
+    <main class="flex-1 p-6 pt-20 flex">
+        <aside class="w-64 bg-white p-6 shadow-lg rounded-lg mr-6 flex-shrink-0">
+            <h3 class="text-xl font-bold text-[var(--color-azul-profundo)] mb-4">TODOS LOS DOCUMENTOS</h3>
+            
+            <div class="mb-6">
+                <a href="#" class="text-[var(--color-azul-celeste-vibrante)] font-semibold flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3.707 9.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L.586 10H8a1 1 0 110 2H.586L-1.707 14.293a1 1 0 011.414 1.414l4-4zM10 8a1 1 0 010 2h7.414l-2.707 2.707a1 1 0 01-1.414-1.414L14.586 10H10a1 1 0 010-2z" clip-rule="evenodd" />
+                    </svg>
+                    Documentos comerciales
+                </a>
+                <ul class="ml-6 space-y-1 text-gray-700">
+                    <li><a href="/facturas" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Facturas</a></li>
+                    <li><a href="/guias_de_remision" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Guías de remisión</a></li>
+                    <li><a href="/orden_de_compra" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Orden de compra</a></li>
+                    <li><a href="/boleta_de_venta" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Boleta de venta</a></li>
+                    <li><a href="/recibos_de_ingresos" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Recibos de ingresos</a></li>
+                    <li><a href="/nota_de_credito" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Nota de crédito</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <a href="#" class="text-[var(--color-azul-celeste-vibrante)] font-semibold flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3.707 9.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L.586 10H8a1 1 0 110 2H.586L-1.707 14.293a1 1 0 011.414 1.414l4-4zM10 8a1 1 0 010 2h7.414l-2.707 2.707a1 1 0 01-1.414-1.414L14.586 10H10a1 1 0 010-2z" clip-rule="evenodd" />
+                    </svg>
+                    Documentos legales
+                </a>
+                <ul class="ml-6 space-y-1">
+                    <li><a href="/memorando" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Memorando</a></li>
+                    <li><a href="/oficio" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Oficio</a></li>
+                    <li><a href="/informe" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Informe</a></li>
+                    <li><a href="/acta" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Acta</a></li>
+                    <li><a href="/solicitud" class="block w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors">Solicitud</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <section class="flex-1 bg-white p-6 shadow-lg rounded-lg">
+            <h2 class="text-2xl font-bold text-center text-[var(--color-azul-profundo)] mb-8"></h2>
+        </section>
+    </main>
+</body>
+</html>

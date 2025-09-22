@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - DocuEmprende</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-azul-profundo: #1A2F6C;
+                --color-azul-celeste-vibrante: #3DC1D3;
+                --color-beige-calido: #F5E6D3;
+                --color-arena-dorada: #D4B485;
+                --color-azul-electrico-claro: #0096C7;
+                --color-bianco-roto: #F9F7F2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[var(--color-bianco-roto)] min-h-screen flex flex-col">
+    <nav class="bg-[var(--color-azul-profundo)] shadow-md p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-50">
+        <div class="text-2xl font-bold text-white">
+            DocuEmprende
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="/home" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Home</a>
+            <a href="/dinerito" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Dinerito</a>
+            <a href="/documentos" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Documentos de mi negocio</a>
+            <a href="/inventario" class="text-[var(--color-azul-celeste-vibrante)] font-semibold">Inventario</a>
+            <a href="/cuenta" class="text-[var(--color-azul-celeste-vibrante)] font-semibold">User</a>
+            <a href="/logout" class="bg-[var(--color-azul-electrico-claro)] text-white px-4 py-2 rounded-full font-semibold hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Cerrar Sesión</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 p-6 bg-[var(--color-bianco-roto)] flex flex-col items-center justify-start min-h-full pt-20">
+        <div class="bg-[var(--color-beige-calido)] p-8 rounded-lg shadow-md w-full max-w-4xl">
+            <h2 class="text-2xl font-bold text-center text-[var(--color-azul-profundo)] mb-8">Inventario de Productos</h2>
+
+            <div class="overflow-x-auto bg-white rounded-lg shadow-sm">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Producto
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cantidad vendida
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Precio Unitario (S/)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                </table>
+            </div>
+
+            <button id="addRowButton" class="mt-6 w-full bg-[var(--color-azul-profundo)] text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300 transform hover:scale-105">
+                Añadir Producto
+            </button>
+
+            <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
+
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inventoryTableBody = document.getElementById('inventory-table-body');
+            const addRowButton = document.getElementById('addRowButton');
+            const statusMessageEl = document.getElementById('statusMessage');
+
+            // Función para mostrar mensajes de estado
+            const showStatus = (message, isError = false) => {
+                statusMessageEl.textContent = message;
+                statusMessageEl.classList.remove('hidden');
+                statusMessageEl.classList.remove('text-green-600', 'text-red-600');
+                statusMessageEl.classList.add(isError ? 'text-red-600' : 'text-green-600');
+            };
+
+            // Función para guardar los datos en el servidor
+            const saveData = async () => {
+                const rows = inventoryTableBody.querySelectorAll('tr');
+                const data = [];
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    data.push({
+                        item: inputs[0].value,
+                        quantity: parseFloat(inputs[1].value) || 0,
+                        price: parseFloat(inputs[2].value) || 0,
+                    });
+                });
+                
+                try {
+                    const response = await fetch('/save_inventario_data', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Error al guardar datos.');
+                    }
+                    showStatus('Inventario guardado exitosamente.', false);
+                } catch (error) {
+                    showStatus('Error al guardar inventario. Revisa la conexión.', true);
+                }
+            };
+
+            // Función para cargar los datos desde el servidor
+            const loadData = async () => {
+                try {
+                    const response = await fetch('/get_inventario_data');
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar el inventario.');
+                    }
+                    const data = await response.json();
+                    
+                    if (data.length > 0) {
+                        // Limpiar filas existentes antes de cargar
+                        inventoryTableBody.innerHTML = '';
+                        data.forEach(item => {
+                            addRow(item);
+                        });
+                    } else {
+                        // Si no hay datos, añadir una fila vacía
+                        addRow();
+                    }
+                } catch (error) {
+                    showStatus('Error al cargar inventario. Puedes añadir productos manualmente.', true);
+                    addRow();
+                }
+            };
+            
+            // Función para añadir una fila a la tabla
+            const addRow = (item = {item: '', quantity: 0, price: 0}) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="text" value="${item.item}" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" placeholder="Nombre del producto" />
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="number" value="${item.quantity}" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="number" value="${item.price}" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                    </td>
+                `;
+                
+                // Añadir evento 'input' a los campos de la nueva fila
+                row.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('input', () => {
+                        clearTimeout(this.saveTimer);
+                        this.saveTimer = setTimeout(saveData, 1500);
+                    });
+                });
+                
+                inventoryTableBody.appendChild(row);
+            };
+
+            addRowButton.addEventListener('click', () => addRow());
+            
+            // Cargar los datos al iniciar la página
+            loadData();
+        });
+    </script>
+</body>
+</html>

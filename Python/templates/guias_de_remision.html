@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Remisión - DocuEmprende</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-sidebar-bg: #191970;
+                --color-sidebar-active-bg: #90BFFF; 
+                --color-header-bg: #90BFFF; 
+                --color-fondo-principal: #F5EFE6; 
+                --color-card-bg: #F5F5F5; 
+                --color-btn-blue: #00BFFF; 
+                --color-btn-green: #D4A373; 
+                --color-btn-red: #EF4444; 
+                --color-btn-yellow: #D4A373; 
+            }
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-fondo-principal);
+        }
+        .main-content {
+            margin-top: 64px;
+            padding-left: 256px;
+        }
+        .sidebar {
+            width: 256px;
+            background-color: var(--color-sidebar-bg);
+            transition: transform 0.3s ease-in-out;
+        }
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+        }
+        .menu-item.active, .menu-item.selected {
+            background-color: var(--color-sidebar-active-bg);
+            border-radius: 0.5rem;
+        }
+        .menu-item.active .icon, .menu-item.active span,
+        .menu-item.selected .icon, .menu-item.selected span {
+            color: #1f2937; 
+        }
+        .menu-item {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .btn-base {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            color: white;
+            font-weight: 500;
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn-base:hover {
+            transform: translateY(-1px);
+        }
+        .btn-blue-custom { background-color: var(--color-btn-blue); }
+        .btn-blue-custom:hover { background-color: #00A3E5; }
+        .btn-green-custom { background-color: var(--color-btn-green); }
+        .btn-green-custom:hover { background-color: #C28F5A; }
+        .btn-red-custom { background-color: var(--color-btn-red); }
+        .btn-red-custom:hover { background-color: #DC2626; }
+        .btn-yellow-custom { background-color: var(--color-btn-yellow); }
+        .btn-yellow-custom:hover { background-color: #C28F5A; }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding-left: 0;
+            }
+            .sidebar.mobile-hidden {
+                transform: translateX(-100%);
+            }
+        }
+        input, select, textarea {
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 transform md:relative md:translate-x-0 mobile-hidden z-50">
+        <div class="h-full flex flex-col justify-between">
+            <div class="px-6 py-4">
+                <h1 class="text-white text-3xl font-bold rounded-lg mb-8">DocuEmprende</h1>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('facturas') }}" class="menu-item flex items-center p-3 text-white">
+                        <i class="fas fa-receipt mr-3 icon"></i>
+                        <span>Facturas</span>
+                    </a>
+                    <a href="{{ url_for('guias_de_remision') }}" class="menu-item active selected flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-truck-loading mr-3 icon"></i>
+                        <span>Guías de Remisión</span>
+                    </a>
+                    <a href="{{ url_for('recibos_de_ingresos') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-money-check-alt mr-3 icon"></i>
+                        <span>Recibos de Ingresos</span>
+                    </a>
+                    <a href="{{ url_for('boleta_de_venta') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-file-invoice mr-3 icon"></i>
+                        <span>Boleta de Venta</span>
+                    </a>
+                    <a href="{{ url_for('orden_de_compra') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-shopping-cart mr-3 icon"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                    <a href="{{ url_for('nota_de_credito') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-credit-card mr-3 icon"></i>
+                        <span>Nota de Crédito</span>
+                    </a>
+                    <a href="{{ url_for('acta') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-file-alt mr-3 icon"></i>
+                        <span>Acta</span>
+                    </a>
+                    <a href="{{ url_for('memorando') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-sticky-note mr-3 icon"></i>
+                        <span>Memorando</span>
+                    </a>
+                    <a href="{{ url_for('oficio') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-building mr-3 icon"></i>
+                        <span>Oficio</span>
+                    </a>
+                    <a href="{{ url_for('informe') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-chart-bar mr-3 icon"></i>
+                        <span>Informe</span>
+                    </a>
+                    <a href="{{ url_for('solicitud') }}" class="menu-item flex items-center p-3 text-gray-400 hover:text-white">
+                        <i class="fas fa-paper-plane mr-3 icon"></i>
+                        <span>Solicitud</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </aside>
+
+    
+    <div class="flex-1 flex flex-col main-content">
+        
+        <header class="bg-[var(--color-header-bg)] shadow p-4 hidden md:flex items-center fixed w-full top-0 z-30 justify-between">
+            <h1 class="text-2xl font-bold">Guía de Remisión</h1>
+            <nav class="flex-1 flex justify-center space-x-6">
+                <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Home</a>
+                <a href="{{ url_for('dinerito') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Dinerito</a>
+                <a href="{{ url_for('documentos') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Documentos de mi negocio</a>
+                <a href="{{ url_for('inventario') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Inventario</a>
+                <a href="{{ url_for('cuenta') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">User</a>
+                <a href="{{ url_for('logout') }}" class="text-gray-600 hover:text-blue-500 transition-colors duration-200 font-semibold">Cerrar Sesión</a>
+            </nav>
+            <div class="w-1/4"></div>
+        </header>
+
+        <main class="flex-1 p-8 pt-20 md:pt-8">
+            <div class="container mx-auto">
+                <div class="bg-[var(--color-card-bg)] p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Generador de Guías de Remisión</h2>
+                    <div id="message-box" class="hidden mb-4 p-3 rounded-md text-sm text-white font-semibold"></div>
+                    <form id="delivery-guide-form" class="space-y-4">
+                        <div>
+                            <label for="guide_number" class="block text-gray-700 font-medium">Número de Guía:</label>
+                            <input type="text" id="guide_number" name="guide_number" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="transfer_date" class="block text-gray-700 font-medium">Fecha de Traslado:</label>
+                            <input type="date" id="transfer_date" name="transfer_date" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="origin_address" class="block text-gray-700 font-medium">Dirección de Partida:</label>
+                            <input type="text" id="origin_address" name="origin_address" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="destination_address" class="block text-gray-700 font-medium">Dirección de Llegada:</label>
+                            <input type="text" id="destination_address" name="destination_address" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="transporter_name" class="block text-gray-700 font-medium">Nombre del Transportista:</label>
+                            <input type="text" id="transporter_name" name="transporter_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+
+                        <div id="items-container" class="space-y-2">
+                            <h3 class="text-lg font-bold text-gray-800">Bienes a Transportar</h3>
+                        </div>
+                        <button type="button" id="add-item-btn" class="btn-base btn-blue-custom">
+                            Añadir Bien
+                        </button>
+                        
+                        <div class="flex space-x-4">
+                            <button type="submit" id="save-guide-btn" class="w-full btn-base btn-green-custom">
+                                Guardar Guía
+                            </button>
+                            <button type="button" id="generate-pdf-btn" class="w-full btn-base btn-red-custom">
+                                Generar PDF
+                            </button>
+                            <button type="button" id="email-guide-btn" class="w-full btn-base btn-yellow-custom">
+                                Enviar por Correo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        setLogLevel('debug');
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let userId = null;
+        let isAuthReady = false;
+
+        async function initAuth() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                userId = auth.currentUser.uid;
+                isAuthReady = true;
+                console.log("Firebase initialized. User ID:", userId);
+                await loadData();
+            } catch (error) {
+                console.error("Firebase auth error:", error);
+                isAuthReady = true;
+                await loadData();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menu-btn');
+
+            if (menuBtn) {
+                menuBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('mobile-hidden');
+                });
+            }
+
+            const currentPath = window.location.pathname.split('/').pop();
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                const itemPath = item.href.split('/').pop();
+                if (itemPath === currentPath) {
+                    item.classList.add('selected');
+                }
+                item.addEventListener('mouseover', () => {
+                    item.classList.add('active');
+                });
+                item.addEventListener('mouseout', () => {
+                    if (!item.classList.contains('selected')) {
+                        item.classList.remove('active');
+                    }
+                });
+            });
+
+            const form = document.getElementById('delivery-guide-form');
+            const itemsContainer = document.getElementById('items-container');
+            const addItemBtn = document.getElementById('add-item-btn');
+            const messageBox = document.getElementById('message-box');
+
+            function showMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
+                if (type === 'success') {
+                    messageBox.classList.add('bg-green-500');
+                } else {
+                    messageBox.classList.add('bg-red-500');
+                }
+                setTimeout(() => messageBox.classList.add('hidden'), 5000);
+            }
+
+            function addItemRow(item = { description: '', quantity: '', unit: '' }) {
+                const row = document.createElement('div');
+                row.className = 'flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4';
+                row.innerHTML = `
+                    <input type="text" placeholder="Descripción" value="${item.description}" class="item-description mt-1 block w-full sm:w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <input type="number" placeholder="Cantidad" value="${item.quantity}" min="0" step="any" class="item-quantity mt-1 block w-full sm:w-1/4 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <input type="text" placeholder="Unidad" value="${item.unit}" class="item-unit mt-1 block w-full sm:w-1/4 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <button type="button" class="remove-item-btn text-red-500 hover:text-red-700 self-center"><i class="fas fa-trash"></i></button>
+                `;
+                itemsContainer.appendChild(row);
+                row.querySelector('.remove-item-btn').addEventListener('click', () => {
+                    row.remove();
+                });
+            }
+
+            addItemBtn.addEventListener('click', () => addItemRow());
+
+            async function loadData() {
+                if (!isAuthReady) {
+                    return;
+                }
+                try {
+                    const docRef = doc(db, `artifacts/${appId}/users/${userId}/guias_de_remision`, 'last_guide');
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('guide_number').value = data.guide_number || '';
+                        document.getElementById('transfer_date').value = data.transfer_date || '';
+                        document.getElementById('origin_address').value = data.origin_address || '';
+                        document.getElementById('destination_address').value = data.destination_address || '';
+                        document.getElementById('transporter_name').value = data.transporter_name || '';
+                        itemsContainer.innerHTML = '';
+                        if (data.items && data.items.length > 0) {
+                            data.items.forEach(item => addItemRow(item));
+                        } else {
+                            addItemRow();
+                        }
+                    } else {
+                        addItemRow();
+                    }
+                } catch (error) {
+                    console.error('Error al cargar la última guía de remisión:', error);
+                    showMessage('Error al cargar la última guía.', 'error');
+                    addItemRow();
+                }
+            }
+
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                if (!isAuthReady) {
+                    showMessage('Error de autenticación. Inténtalo de nuevo.', 'error');
+                    return;
+                }
+
+                const items = [];
+                const itemRows = itemsContainer.querySelectorAll('.flex-col');
+                itemRows.forEach(row => {
+                    items.push({
+                        description: row.querySelector('.item-description').value,
+                        quantity: parseFloat(row.querySelector('.item-quantity').value) || 0,
+                        unit: row.querySelector('.item-unit').value
+                    });
+                });
+
+                const data = {
+                    guide_number: document.getElementById('guide_number').value,
+                    transfer_date: document.getElementById('transfer_date').value,
+                    origin_address: document.getElementById('origin_address').value,
+                    destination_address: document.getElementById('destination_address').value,
+                    transporter_name: document.getElementById('transporter_name').value,
+                    items: items,
+                    createdAt: new Date().toISOString()
+                };
+
+                try {
+                    const docRef = doc(db, `artifacts/${appId}/users/${userId}/guias_de_remision`, 'last_guide');
+                    await setDoc(docRef, data);
+                    showMessage('Guía de remisión guardada con éxito.', 'success');
+                } catch (error) {
+                    console.error('Error al guardar la guía de remisión:', error);
+                    showMessage('Error al guardar la guía. Inténtalo de nuevo.', 'error');
+                }
+            });
+
+            const generatePdfBtn = document.getElementById('generate-pdf-btn');
+            generatePdfBtn.addEventListener('click', () => {
+                window.jsPDF = window.jspdf.jsPDF;
+                const doc = new jsPDF();
+
+                const guideNumber = document.getElementById('guide_number').value;
+                const transferDate = document.getElementById('transfer_date').value;
+                const originAddress = document.getElementById('origin_address').value;
+                const destinationAddress = document.getElementById('destination_address').value;
+                const transporterName = document.getElementById('transporter_name').value;
+
+                doc.setFontSize(22);
+                doc.text("GUÍA DE REMISIÓN", 14, 20);
+                doc.setFontSize(12);
+                doc.text(`Número de Guía: ${guideNumber}`, 14, 30);
+                doc.text(`Fecha de Traslado: ${transferDate}`, 14, 37);
+                doc.text(`Dirección de Partida: ${originAddress}`, 14, 44);
+                doc.text(`Dirección de Llegada: ${destinationAddress}`, 14, 51);
+                doc.text(`Transportista: ${transporterName}`, 14, 58);
+
+                const items = [];
+                const itemRows = itemsContainer.querySelectorAll('.flex-col');
+                itemRows.forEach(row => {
+                    const description = row.querySelector('.item-description').value;
+                    const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+                    const unit = row.querySelector('.item-unit').value;
+                    items.push([description, quantity, unit]);
+                });
+
+                doc.autoTable({
+                    startY: 70,
+                    head: [['Descripción de Bienes', 'Cantidad', 'Unidad']],
+                    body: items,
+                    theme: 'striped',
+                    styles: { fillColor: [41, 128, 185], textColor: 255 },
+                    headStyles: { fillColor: [41, 128, 185] }
+                });
+                
+                doc.save(`Guia_Remision_${guideNumber}.pdf`);
+            });
+
+            const emailGuideBtn = document.getElementById('email-guide-btn');
+            emailGuideBtn.addEventListener('click', () => {
+                const subject = `Guía de Remisión Nro. ${document.getElementById('guide_number').value}`;
+                const body = `Hola,\nAdjunto la guía de remisión con número ${document.getElementById('guide_number').value} generada en Cuentas Claras.`;
+                window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            });
+
+            initAuth();
+        });
+    </script>
+</body>
+</html>

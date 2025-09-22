@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo de Ingreso - DocuEmprende</title>
+    <!-- Incluir Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                /* Colores del diseño de la imagen */
+                --color-sidebar-bg: #081A3A; /* azul profundo */
+                --color-sidebar-active-bg: #F5F5DC; /* bianco roto */
+                --color-header-bg: #F5F5DC; /* bianco roto */
+                --color-fondo-principal: #D2B48C; /* beige cálido */
+                --color-texto-oscuro: #081A3A; /* azul profundo */
+                --color-borde-gris: #D2B48C; /* beige cálido */
+                --color-azul-claro: #00BFFF; /* azul celeste vibrante */
+                --color-verde-ok: #D6A66B; /* arena dorada */
+                --color-rojo-cancelar: #00FFFF; /* azul electrico claro */
+                --color-naranja-ok: #D2B48C; /* beige cálido */
+            }
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-fondo-principal);
+        }
+        .main-content {
+            transition: padding-left 0.3s ease-in-out;
+        }
+        .sidebar {
+            width: 256px;
+            background-color: var(--color-sidebar-bg);
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (min-width: 768px) {
+            .main-content {
+                padding-left: 256px;
+            }
+        }
+        .item-row input, .item-row button {
+            border-radius: 0.5rem;
+        }
+        .input-field {
+            border: 1px solid var(--color-borde-gris);
+            background-color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-blue {
+            background-color: var(--color-azul-claro);
+            color: var(--color-texto-oscuro);
+        }
+        .btn-blue:hover {
+            background-color: #00A3D2;
+        }
+        .btn-green {
+            background-color: var(--color-verde-ok);
+            color: var(--color-texto-oscuro);
+        }
+        .btn-green:hover {
+            background-color: #D69752;
+        }
+        .btn-red {
+            background-color: var(--color-rojo-cancelar);
+            color: var(--color-texto-oscuro);
+        }
+        .btn-red:hover {
+            background-color: #00DADA;
+        }
+        .btn-orange {
+            background-color: var(--color-naranja-ok);
+            color: var(--color-texto-oscuro);
+        }
+        .btn-orange:hover {
+            background-color: #B2977B;
+        }
+        .header {
+            background-color: var(--color-header-bg);
+        }
+        .sidebar-item-active {
+            background-color: var(--color-sidebar-active-bg);
+            color: var(--color-texto-oscuro);
+        }
+        .sidebar-item {
+            color: #DDE2EC;
+        }
+        .sidebar-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-50 shadow-lg text-white">
+        <div class="h-full flex flex-col justify-between p-6">
+            <div>
+                <h1 class="text-3xl font-bold mb-8 text-center text-white">DocuEmprende</h1>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('facturas') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-receipt mr-3"></i>
+                        <span>Facturas</span>
+                    </a>
+                    <a href="{{ url_for('guias_de_remision') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-truck-loading mr-3"></i>
+                        <span>Guías de Remisión</span>
+                    </a>
+                    <a href="{{ url_for('recibos_de_ingresos') }}" class="flex items-center p-3 rounded-lg sidebar-item-active">
+                        <i class="fas fa-money-check-alt mr-3"></i>
+                        <span>Recibos de Ingresos</span>
+                    </a>
+                    <a href="{{ url_for('boleta_de_venta') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-file-invoice mr-3"></i>
+                        <span>Boleta de Venta</span>
+                    </a>
+                    <a href="{{ url_for('orden_de_compra') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-shopping-cart mr-3"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                    <a href="{{ url_for('nota_de_credito') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-credit-card mr-3"></i>
+                        <span>Nota de Crédito</span>
+                    </a>
+                    <a href="{{ url_for('acta') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-file-alt mr-3"></i>
+                        <span>Acta</span>
+                    </a>
+                    <a href="{{ url_for('memorando') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-sticky-note mr-3"></i>
+                        <span>Memorando</span>
+                    </a>
+                    <a href="{{ url_for('oficio') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-building mr-3"></i>
+                        <span>Oficio</span>
+                    </a>
+                    <a href="{{ url_for('informe') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-chart-bar mr-3"></i>
+                        <span>Informe</span>
+                    </a>
+                    <a href="{{ url_for('solicitud') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-gray-800 transition-colors">
+                        <i class="fas fa-paper-plane mr-3"></i>
+                        <span>Solicitud</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col main-content">
+        <!-- Header -->
+        <header class="header p-4 flex items-center justify-between shadow-sm fixed w-full top-0 md:left-64 z-40">
+            <button id="menu-btn" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800">Recibos de Ingresos</h1>
+            <nav class="hidden md:flex items-center space-x-4">
+                <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Home</a>
+                <a href="{{ url_for('dinerito') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Dinerito</a>
+                <a href="{{ url_for('documentos') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Documentos de mi negocio</a>
+                <a href="{{ url_for('inventario') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Inventario</a>
+                <a href="{{ url_for('cuenta') }}" class="text-gray-600 hover:text-blue-500 font-semibold">User</a>
+                <a href="{{ url_for('logout') }}" class="text-gray-600 hover:text-blue-500 font-semibold">Cerrar Sesión</a>
+            </nav>
+        </header>
+
+        <!-- Main section -->
+        <main class="flex-1 p-6 md:p-10 overflow-auto mt-16 md:mt-20">
+            <div class="w-full max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-xl shadow-md w-full">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Generar Recibo de Ingreso</h2>
+                    <form id="reciboIngresoForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="recibo_number" class="block text-sm font-medium text-gray-700">N° de Recibo</label>
+                                <input type="text" id="recibo_number" name="recibo_number" required class="mt-1 block w-full input-field">
+                            </div>
+                            <div>
+                                <label for="recibo_date" class="block text-sm font-medium text-gray-700">Fecha</label>
+                                <input type="date" id="recibo_date" name="recibo_date" required class="mt-1 block w-full input-field">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="client_name" class="block text-sm font-medium text-gray-700">Nombre del Cliente</label>
+                            <input type="text" id="client_name" name="client_name" required class="mt-1 block w-full input-field">
+                        </div>
+
+                        <div id="items-container" class="space-y-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Detalles del Ingreso</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 item-row">
+                                <input type="text" placeholder="Concepto" class="col-span-2 input-field item-description">
+                                <input type="number" step="0.01" placeholder="Monto" class="input-field item-price">
+                                <input type="text" placeholder="Referencia" class="input-field item-reference">
+                            </div>
+                        </div>
+                        <button type="button" id="addItemBtn" class="btn btn-blue w-full">
+                            Añadir Ítem
+                            <i class="fas fa-plus ml-2"></i>
+                        </button>
+
+                        <div class="pt-6 space-y-4">
+                            <button type="submit" class="btn btn-green w-full">Guardar Recibo</button>
+                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                                <label for="file_upload" class="flex-1 cursor-pointer btn btn-orange flex items-center justify-center">
+                                    <i class="fas fa-paperclip mr-2"></i>
+                                    Subir Archivo Adjunto
+                                </label>
+                                <input type="file" id="file_upload" class="hidden">
+                                <button type="button" id="generate-pdf" class="flex-1 btn btn-red flex items-center justify-center">
+                                    <i class="fas fa-file-pdf mr-2"></i>
+                                    Generar PDF
+                                </button>
+                            </div>
+                            <div id="uploaded-files-container" class="p-4 border border-gray-200 rounded-lg bg-gray-50 hidden">
+                                <h4 class="text-sm font-semibold mb-2">Archivos adjuntos:</h4>
+                                <ul id="files-list"></ul>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para mensajes -->
+    <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-80 text-center">
+            <p id="modal-text" class="text-lg font-semibold mb-4"></p>
+            <button id="modal-close-btn" class="btn btn-green">OK</button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-80 text-center">
+            <p id="confirmation-text" class="text-lg font-semibold mb-4"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-btn" class="btn btn-red">Borrar</button>
+                <button id="cancel-btn" class="btn btn-blue">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menu-btn');
+            const itemsContainer = document.getElementById('items-container');
+            const addItemBtn = document.getElementById('addItemBtn');
+            const reciboIngresoForm = document.getElementById('reciboIngresoForm');
+            const fileUploadInput = document.getElementById('file_upload');
+            const uploadedFilesContainer = document.getElementById('uploaded-files-container');
+            const filesList = document.getElementById('files-list');
+
+            // Modales
+            const messageModal = document.getElementById('message-modal');
+            const modalText = document.getElementById('modal-text');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const confirmationText = document.getElementById('confirmation-text');
+            const confirmBtn = document.getElementById('confirm-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+
+            // Toggle sidebar en móviles
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            // Función para mostrar mensajes modales
+            function showMessage(message, type) {
+                modalText.textContent = message;
+                modalCloseBtn.className = 'btn ' + (type === 'success' ? 'btn-green' : 'btn-red');
+                messageModal.classList.remove('hidden');
+                modalCloseBtn.onclick = () => messageModal.classList.add('hidden');
+            }
+
+            // Función para mostrar modal de confirmación
+            function showConfirmation(message, onConfirm) {
+                confirmationText.textContent = message;
+                confirmationModal.classList.remove('hidden');
+                confirmBtn.onclick = () => {
+                    onConfirm();
+                    confirmationModal.classList.add('hidden');
+                };
+                cancelBtn.onclick = () => {
+                    confirmationModal.classList.add('hidden');
+                };
+            }
+
+            // --- Lógica para añadir ítems ---
+            addItemBtn.addEventListener('click', () => {
+                const itemRow = document.createElement('div');
+                itemRow.className = 'grid grid-cols-1 sm:grid-cols-4 gap-4 item-row';
+                itemRow.innerHTML = `
+                    <input type="text" placeholder="Concepto" class="col-span-2 input-field item-description">
+                    <input type="number" step="0.01" placeholder="Monto" class="input-field item-price">
+                    <input type="text" placeholder="Referencia" class="input-field item-reference">
+                    <button type="button" class="btn btn-red remove-item-btn">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                itemsContainer.appendChild(itemRow);
+                itemRow.querySelector('.remove-item-btn').addEventListener('click', () => {
+                    itemRow.remove();
+                });
+            });
+
+            // Re-bind listeners for existing remove buttons
+            document.querySelectorAll('.remove-item-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    button.closest('.item-row').remove();
+                });
+            });
+
+            // --- Lógica para guardar el recibo ---
+            reciboIngresoForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(reciboIngresoForm);
+                const data = {
+                    recibo_number: formData.get('recibo_number'),
+                    recibo_date: formData.get('recibo_date'),
+                    client_name: formData.get('client_name'),
+                    items: []
+                };
+
+                const itemRows = document.querySelectorAll('.item-row');
+                itemRows.forEach(row => {
+                    const description = row.querySelector('.item-description').value;
+                    const price = parseFloat(row.querySelector('.item-price').value);
+                    const reference = row.querySelector('.item-reference').value;
+                    if (description && !isNaN(price)) {
+                        data.items.push({ description, price, reference });
+                    }
+                });
+
+                showMessage('Guardando recibo...', 'info');
+
+                try {
+                    const response = await fetch('/save_recibos_ingresos_data', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                    } else {
+                        showMessage('Error: ' + result.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error al conectar con el servidor.', 'error');
+                }
+            });
+
+            // --- Lógica para subir archivos ---
+            fileUploadInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) { return; }
+
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('file_type', 'recibo_ingreso');
+
+                showMessage('Subiendo archivo...', 'info');
+
+                try {
+                    const response = await fetch('/upload_file', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                        loadUploadedFiles();
+                    } else {
+                        showMessage(result.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error al subir el archivo.', 'error');
+                }
+            });
+
+            // --- Funciones para gestionar archivos ---
+            window.sendDocumentByEmail = async (filename) => {
+                const reciboNumber = document.getElementById('recibo_number').value;
+                showMessage('Enviando correo...', 'info');
+                try {
+                    const response = await fetch('/send_document_by_email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            document_type: 'recibo_ingreso',
+                            document_id: reciboNumber,
+                            filename: filename
+                        })
+                    });
+                    const result = await response.json();
+                    showMessage(result.message, result.success ? 'success' : 'error');
+                } catch (error) {
+                    showMessage('Error al enviar el correo.', 'error');
+                }
+            };
+
+            window.deleteFile = async (filename) => {
+                showConfirmation(`¿Estás seguro de que quieres borrar el archivo "${filename}"?`, async () => {
+                    showMessage('Borrando archivo...', 'info');
+                    try {
+                        const response = await fetch(`/delete_file/${filename}`, { method: 'DELETE' });
+                        const result = await response.json();
+                        if (result.success) {
+                            showMessage(result.message, 'success');
+                            loadUploadedFiles();
+                        } else {
+                            showMessage(result.message, 'error');
+                        }
+                    } catch (error) {
+                        showMessage('Error al borrar el archivo.', 'error');
+                    }
+                });
+            };
+
+            async function loadUploadedFiles() {
+                try {
+                    const response = await fetch('/get_files_by_type/recibos_ingresos');
+                    if (response.status === 401) { return; }
+                    const files = await response.json();
+
+                    if (files.length > 0) {
+                        uploadedFilesContainer.classList.remove('hidden');
+                        filesList.innerHTML = '';
+                        files.forEach(file => {
+                            const li = document.createElement('li');
+                            li.className = 'flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 transition-colors';
+                            li.innerHTML = `
+                                <a href="/download/${file.filename}" class="text-blue-600 hover:underline flex-1 truncate mr-2">${file.filename}</a>
+                                <div class="flex space-x-2">
+                                    <button onclick="sendDocumentByEmail('${file.filename}')" class="btn btn-blue text-sm px-3 py-1">
+                                        <i class="fas fa-envelope"></i>
+                                    </button>
+                                    <button onclick="deleteFile('${file.filename}')" class="btn btn-red text-sm px-3 py-1">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            `;
+                            filesList.appendChild(li);
+                        });
+                    } else {
+                        uploadedFilesContainer.classList.add('hidden');
+                    }
+                } catch (error) {
+                    console.error('Error al cargar la lista de archivos:', error);
+                }
+            }
+
+            async function loadData() {
+                try {
+                    const response = await fetch('/get_recibos_ingresos_data');
+                    if (response.status === 401) { window.location.href = "{{ url_for('login') }}"; return; }
+                    const data = await response.json();
+                    if (Object.keys(data).length > 0) {
+                        document.getElementById('recibo_number').value = data.recibo_number;
+                        document.getElementById('recibo_date').value = data.recibo_date;
+                        document.getElementById('client_name').value = data.client_name;
+
+                        itemsContainer.innerHTML = '';
+                        data.items.forEach(item => {
+                            const itemRow = document.createElement('div');
+                            itemRow.className = 'grid grid-cols-1 sm:grid-cols-4 gap-4 item-row';
+                            itemRow.innerHTML = `
+                                <input type="text" placeholder="Concepto" class="col-span-2 input-field item-description" value="${item.description}">
+                                <input type="number" step="0.01" placeholder="Monto" class="input-field item-price" value="${item.price}">
+                                <input type="text" placeholder="Referencia" class="input-field item-reference" value="${item.reference}">
+                                <button type="button" class="btn btn-red remove-item-btn">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            `;
+                            itemsContainer.appendChild(itemRow);
+                            itemRow.querySelector('.remove-item-btn').addEventListener('click', () => { itemRow.remove(); });
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error al cargar los datos:', error);
+                }
+            }
+
+            // Llamar a las funciones de carga al inicio
+            loadData();
+            loadUploadedFiles();
+        });
+    </script>
+</body>
+</html>

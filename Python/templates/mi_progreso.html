@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Progreso - DocuEmprende</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-azul-profundo: #1A2F6C;
+                --color-azul-celeste-vibrante: #3DC1D3;
+                --color-beige-calido: #F5E6D3;
+                --color-arena-dorada: #D4B485;
+                --color-azul-electrico-claro: #0096C7;
+                --color-bianco-roto: #F9F7F2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[var(--color-bianco-roto)] min-h-screen flex flex-col font-sans text-gray-800">
+
+    <nav class="bg-[var(--color-azul-profundo)] shadow-md p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-50">
+        <div class="text-2xl font-bold text-white">
+            DocuEmprende
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="/home" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Home</a>
+            <a href="/dinerito" class="text-[var(--color-azul-celeste-vibrante)] font-semibold">Dinerito</a>
+            <a href="/documentos" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Documentos de mi negocio</a>
+            <a href="/inventario" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Inventario</a>
+            <a href="/cuenta" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">User</a>
+            <a href="/logout" class="bg-[var(--color-azul-electrico-claro)] text-white px-4 py-2 rounded-full font-semibold hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Cerrar Sesión</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 p-6 pt-20 flex flex-col items-center">
+        <div class="w-full max-w-6xl p-8 bg-white rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center text-[var(--color-azul-profundo)] mb-8">MI PROGRESO</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gray-50 p-6 rounded-lg shadow-inner">
+                    <h3 class="text-xl font-bold text-[var(--color-azul-profundo)] mb-4">Productos más vendidos</h3>
+                    <div class="flex justify-center h-64">
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg shadow-inner">
+                    <h3 class="text-xl font-bold text-[var(--color-azul-profundo)] mb-4">Total de ventas por mes</h3>
+                    <div class="h-64">
+                        <canvas id="monthlySalesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/get_progress_data');
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error('Error al obtener los datos:', data.error);
+                    return;
+                }
+
+                // Datos para "Total de ventas por mes"
+                const monthlySalesData = data.monthly_sales;
+                const months = Object.keys(monthlySalesData);
+                const sales = Object.values(monthlySalesData);
+                
+                const barChartCtx = document.getElementById('monthlySalesChart').getContext('2d');
+                new Chart(barChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Ingresos por Mes',
+                            data: sales,
+                            backgroundColor: ['#1A2F6C', '#3DC1D3', '#D4B485', '#0096C7', '#6C7A9D', '#F5E6D3'],
+                            borderColor: ['#1A2F6C', '#3DC1D3', '#D4B485', '#0096C7', '#6C7A9D', '#F5E6D3'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Ingresos (S/)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Datos para "Productos más vendidos"
+                const topProductsData = data.top_products;
+                const productLabels = topProductsData.map(item => item.label);
+                const productValues = topProductsData.map(item => item.value);
+
+                const pieChartCtx = document.getElementById('topProductsChart').getContext('2d');
+                new Chart(pieChartCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: productLabels,
+                        datasets: [{
+                            label: 'Cantidad Vendida',
+                            data: productValues,
+                            backgroundColor: ['#3DC1D3', '#1A2F6C', '#D4B485', '#0096C7', '#F5E6D3'],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error al cargar los datos de progreso:', error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Oficios - DocuEmprende/title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .main-content {
+            padding-left: 256px;
+        }
+        .sidebar {
+            width: 256px;
+            background-color: #0c4a6e; /* Azul profundo */
+            transition: transform 0.3s ease-in-out;
+        }
+        .menu-item {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .menu-item:hover {
+            background-color: #164e63; /* Tonalidad de azul */
+            border-radius: 0.5rem;
+        }
+        .menu-item.active, .menu-item.selected {
+            background-color: #3b82f6; /* Azul eléctrico claro */
+            border-radius: 0.5rem;
+        }
+        .menu-item.active .icon, .menu-item.active span,
+        .menu-item.selected .icon, .menu-item.selected span {
+            color: #ffffff;
+        }
+        .sidebar-section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #ffffff;
+        }
+        .sidebar-section-title i {
+            transition: transform 0.3s ease-in-out;
+        }
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .submenu.open {
+            max-height: 500px;
+        }
+        @media (max-width: 1023px) {
+            .main-content {
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="flex min-h-screen bg-stone-100 text-gray-800">
+
+    <!-- Botón del menú de hamburguesa para dispositivos móviles -->
+    <button id="mobile-menu-toggle" class="md:hidden p-4 text-white focus:outline-none absolute top-0 left-0 z-50 bg-blue-950 rounded-br-lg shadow-md">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-50 shadow-lg bg-blue-950">
+        <div class="h-full flex flex-col justify-between">
+            <div class="px-6 py-4">
+                <h1 class="text-white text-3xl font-bold rounded-lg mb-8">DocuEmprende</h1>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('facturas') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-receipt mr-3 icon"></i>
+                        <span>Facturas</span>
+                    </a>
+                    <a href="{{ url_for('guias_de_remision') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-truck-loading mr-3 icon"></i>
+                        <span>Guías de Remisión</span>
+                    </a>
+                    <a href="{{ url_for('recibos_de_ingresos') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-money-check-alt mr-3 icon"></i>
+                        <span>Recibos de Ingresos</span>
+                    </a>
+                    <a href="{{ url_for('boleta_de_venta') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-file-invoice mr-3 icon"></i>
+                        <span>Boleta de Venta</span>
+                    </a>
+                    <a href="{{ url_for('orden_de_compra') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-shopping-cart mr-3 icon"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                    <a href="{{ url_for('nota_de_credito') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-credit-card mr-3 icon"></i>
+                        <span>Nota de Crédito</span>
+                    </a>
+                    <a href="{{ url_for('acta') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-file-alt mr-3 icon"></i>
+                        <span>Acta</span>
+                    </a>
+                    <a href="{{ url_for('memorando') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-sticky-note mr-3 icon"></i>
+                        <span>Memorando</span>
+                    </a>
+                    <a href="{{ url_for('oficio') }}" class="menu-item active selected flex items-center p-3 text-white">
+                        <i class="fas fa-building mr-3 icon"></i>
+                        <span>Oficio</span>
+                    </a>
+                    <a href="{{ url_for('informe') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-chart-bar mr-3 icon"></i>
+                        <span>Informe</span>
+                    </a>
+                    <a href="{{ url_for('solicitud') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-paper-plane mr-3 icon"></i>
+                        <span>Solicitud</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col main-content">
+        <!-- Desktop Header -->
+        <header class="bg-amber-100 shadow p-4 hidden md:flex items-center justify-between fixed w-full top-0 z-30">
+            <div class="flex items-center space-x-6">
+                <h1 class="text-2xl font-bold text-sky-900">Gestión de Oficios</h1>
+                <nav class="flex items-center space-x-4">
+                    <a href="{{ url_for('home') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Home</a>
+                    <a href="{{ url_for('dinerito') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Dinerito</a>
+                    <a href="{{ url_for('documentos') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Documentos de mi negocio</a>
+                    <a href="{{ url_for('inventario') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Inventario</a>
+                    <a href="{{ url_for('cuenta') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">User</a>
+                    <a href="{{ url_for('logout') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Cerrar Sesión</a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main section -->
+        <main class="flex-1 p-6 md:p-10 pt-20 md:pt-8 overflow-auto">
+            <div class="w-full max-w-4xl mx-auto">
+                <div class="bg-stone-50 p-8 rounded-xl shadow-md w-full">
+                    <h2 class="text-2xl font-bold mb-6 text-sky-900 text-center">Gestión de Oficios</h2>
+                    <form id="oficio-form" class="space-y-4">
+                        <div>
+                            <label for="oficio_number" class="block text-stone-700 font-medium">Número de Oficio:</label>
+                            <input type="text" id="oficio_number" name="oficio_number" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
+                        </div>
+                        <div>
+                            <label for="oficio_date" class="block text-stone-700 font-medium">Fecha:</label>
+                            <div class="relative mt-1">
+                                <input type="date" id="oficio_date" name="oficio_date" required class="block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-calendar-alt text-stone-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="oficio_to" class="block text-stone-700 font-medium">Para:</label>
+                            <input type="text" id="oficio_to" name="oficio_to" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
+                        </div>
+                        <div>
+                            <label for="oficio_from" class="block text-stone-700 font-medium">De:</label>
+                            <input type="text" id="oficio_from" name="oficio_from" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
+                        </div>
+                        <div>
+                            <label for="oficio_subject" class="block text-stone-700 font-medium">Asunto:</label>
+                            <input type="text" id="oficio_subject" name="oficio_subject" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
+                        </div>
+                        <div>
+                            <label for="oficio_body" class="block text-stone-700 font-medium">Contenido del Oficio:</label>
+                            <textarea id="oficio_body" name="oficio_body" rows="10" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"></textarea>
+                        </div>
+                    </form>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+                        <button id="save-oficio" class="bg-sky-600 text-white px-8 py-3 rounded-md font-semibold hover:bg-sky-700 transition duration-300 text-lg shadow-md">
+                            Guardar Oficio
+                        </button>
+                        <button id="generate-pdf" class="bg-cyan-600 text-white px-8 py-3 rounded-md font-semibold hover:bg-cyan-700 transition duration-300 text-lg shadow-md">
+                            Generar PDF
+                        </button>
+                        <button id="email-oficio" class="bg-amber-400 text-gray-800 px-8 py-3 rounded-md font-semibold hover:bg-amber-500 transition duration-300 text-lg shadow-md">
+                            Enviar por Correo
+                        </button>
+                    </div>
+                    <div id="message-box" class="mt-4 p-3 rounded-md text-sm text-white font-semibold hidden text-center"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuItems = document.querySelectorAll('.menu-item');
+            const mobileToggle = document.getElementById('mobile-menu-toggle');
+            const saveBtn = document.getElementById('save-oficio');
+            const pdfBtn = document.getElementById('generate-pdf');
+            const emailBtn = document.getElementById('email-oficio');
+            const messageBox = document.getElementById('message-box');
+            
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('-translate-x-full');
+                });
+            }
+
+            const currentPath = window.location.pathname.split('/').pop();
+            menuItems.forEach(item => {
+                const itemPath = item.href.split('/').pop();
+                if (itemPath.includes(currentPath.split('.')[0])) {
+                    item.classList.add('selected');
+                }
+                
+                item.addEventListener('mouseover', () => {
+                    item.classList.add('active');
+                });
+                item.addEventListener('mouseout', () => {
+                    if (!item.classList.contains('selected')) {
+                        item.classList.remove('active');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.sidebar-section-title').forEach(title => {
+                title.addEventListener('click', () => {
+                    const submenuId = title.dataset.submenu;
+                    const submenu = document.getElementById(`submenu-${submenuId}`);
+                    const icon = title.querySelector('i');
+                    if (submenu && icon) {
+                        submenu.classList.toggle('open');
+                        icon.classList.toggle('rotate-180');
+                    }
+                });
+            });
+
+            function showMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.classList.remove('hidden', 'bg-red-500', 'bg-green-500', 'bg-blue-500', 'bg-yellow-500');
+                if (type === 'success') {
+                    messageBox.classList.add('bg-green-500');
+                } else if (type === 'info') {
+                    messageBox.classList.add('bg-blue-500');
+                } else if (type === 'warning') {
+                    messageBox.classList.add('bg-yellow-500', 'text-gray-800');
+                } else {
+                    messageBox.classList.add('bg-red-500');
+                }
+                setTimeout(() => messageBox.classList.add('hidden'), 5000);
+            }
+
+            saveBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Aquí iría la lógica para guardar el oficio
+                showMessage('Oficio guardado exitosamente.', 'success');
+            });
+
+            pdfBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Aquí iría la lógica para generar el PDF
+                showMessage('Generando PDF del oficio.', 'info');
+            });
+
+            emailBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Aquí iría la lógica para enviar por correo electrónico
+                showMessage('Abriendo cliente de correo para enviar oficio.', 'warning');
+            });
+        });
+    </script>
+</body>
+</html>

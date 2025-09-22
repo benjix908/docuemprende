@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-azul-profundo: #1A2F6C;
+                --color-azul-celeste-vibrante: #3DC1D3;
+                --color-beige-calido: #F5E6D3;
+                --color-arena-dorada: #D4B485;
+                --color-azul-electrico-claro: #0096C7;
+                --color-bianco-roto: #F9F7F2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[var(--color-bianco-roto)] min-h-screen flex flex-col justify-center items-center font-sans text-gray-800">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
+        <h2 class="text-2xl font-bold text-center text-[var(--color-azul-profundo)] mb-6">PERFIL DE USUARIO</h2>
+        <form id="profileForm" action="/save_profile" method="post">
+            <div class="mb-4">
+                <label for="username" class="block text-sm font-medium text-gray-700">Nombre de Usuario</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" readonly class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100 cursor-not-allowed">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                
+                {% if user.email %}
+                    <div id="emailDisplay" class="mt-1 flex justify-between items-center bg-gray-50 border border-gray-300 rounded-md shadow-sm p-2">
+                        <span class="text-gray-900">{{ user.email }}</span>
+                        <button type="button" id="editEmailBtn" class="text-[var(--color-azul-electrico-claro)] text-sm font-medium hover:underline">Editar</button>
+                    </div>
+                    <div id="emailInputSection" class="hidden mt-1">
+                        <input type="email" id="email" name="email" value="{{ user.email }}" placeholder="Tu correo electrónico" class="block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-[var(--color-azul-celeste-vibrante)] focus:border-[var(--color-azul-celeste-vibrante)]">
+                    </div>
+                {% else %}
+                    <button type="button" id="linkEmailBtn" class="mt-1 w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-azul-electrico-claro)] hover:bg-[var(--color-azul-celeste-vibrante)]">
+                        Vincular correo electrónico
+                    </button>
+                    <div id="emailInputSection" class="hidden mt-1">
+                        <input type="email" id="email" name="email" value="" placeholder="Tu correo electrónico" class="block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-[var(--color-azul-celeste-vibrante)] focus:border-[var(--color-azul-celeste-vibrante)]">
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="company_name" class="block text-sm font-medium text-gray-700">Nombre de la Empresa</label>
+                <input type="text" id="company_name" name="company_name" value="{{ user.company_name or '' }}" placeholder="Mi Negocio S.A.C." class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-[var(--color-azul-celeste-vibrante)] focus:border-[var(--color-azul-celeste-vibrante)]">
+            </div>
+            
+            <div class="mb-6 flex justify-between items-center">
+                <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                <a href="/cambiar_contraseña" class="text-[var(--color-azul-electrico-claro)] text-sm font-medium hover:underline">Cambiar Contraseña</a>
+            </div>
+
+            <button type="submit" class="w-full bg-[var(--color-azul-electrico-claro)] text-white px-4 py-2 rounded-full font-semibold hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300">Guardar Cambios</button>
+        </form>
+    </div>
+
+    <a href="{{ url_for('home') }}" class="text-center mt-4 text-[var(--color-azul-electrico-claro)] hover:underline">
+        ← Volver al inicio
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const linkEmailBtn = document.getElementById('linkEmailBtn');
+            const editEmailBtn = document.getElementById('editEmailBtn');
+            const emailInputSection = document.getElementById('emailInputSection');
+            const emailDisplay = document.getElementById('emailDisplay');
+            const emailInput = document.getElementById('email');
+
+            function showEmailInput() {
+                if (linkEmailBtn) linkEmailBtn.classList.add('hidden');
+                if (emailDisplay) emailDisplay.classList.add('hidden');
+                emailInputSection.classList.remove('hidden');
+            }
+
+            if (linkEmailBtn) {
+                linkEmailBtn.addEventListener('click', showEmailInput);
+            }
+
+            if (editEmailBtn) {
+                editEmailBtn.addEventListener('click', showEmailInput);
+            }
+        });
+
+        document.getElementById('profileForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/save_profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Perfil actualizado con éxito.');
+                    // Actualiza la página para mostrar el nuevo correo
+                    window.location.reload(); 
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error al conectar con el servidor.');
+            }
+        });
+    </script>
+</body>
+</html>

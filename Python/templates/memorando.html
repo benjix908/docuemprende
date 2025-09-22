@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorando Digital - DocuEmprende</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                /* Nueva paleta de colores: azul profundo, beige cálido, arena dorada, azul celeste vibrante, azul electrico claro, bianco roto */
+                --color-sidebar-bg: #0F1C36; /* azul profundo */
+                --color-sidebar-active-bg: #BEE3F8; /* azul electrico claro */
+                --color-header-bg: #F9FAFB; /* bianco roto */
+                --color-fondo-principal: #F5F5DC; /* beige cálido */
+                --color-texto-oscuro: #0F1C36; /* azul profundo */
+                --color-borde-gris: #D4D4D4;
+                --color-azul-claro: #00BFFF; /* azul celeste vibrante */
+                --color-ok: #E2BF66; /* arena dorada */
+                --color-cancelar: #0F1C36; /* azul profundo */
+            }
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-fondo-principal);
+        }
+        .main-content {
+            transition: padding-left 0.3s ease-in-out;
+        }
+        .sidebar {
+            width: 256px;
+            background-color: var(--color-sidebar-bg);
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (min-width: 768px) {
+            .main-content {
+                padding-left: 256px;
+            }
+        }
+        .input-field {
+            border: 1px solid var(--color-borde-gris);
+            background-color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-ok {
+            background-color: var(--color-ok);
+            color: var(--color-cancelar);
+        }
+        .btn-ok:hover {
+            background-color: #CBAA5F;
+        }
+        .btn-cancelar {
+            background-color: var(--color-cancelar);
+            color: white;
+        }
+        .btn-cancelar:hover {
+            background-color: #0A111F;
+        }
+        .header {
+            background-color: var(--color-header-bg);
+        }
+        .sidebar-item-active {
+            background-color: var(--color-sidebar-active-bg);
+            color: var(--color-texto-oscuro);
+        }
+        .sidebar-item {
+            color: #DDE2EC;
+        }
+        .sidebar-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .memo-container {
+            max-width: 800px;
+            margin: auto;
+            background-color: var(--color-header-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 2.5rem;
+        }
+        .memo-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .memo-field label {
+            width: 120px;
+            font-weight: 600;
+            color: var(--color-texto-oscuro);
+        }
+        .memo-field input[type="text"] {
+            flex-grow: 1;
+            border: 1px solid var(--color-borde-gris);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            background-color: #f9fafb;
+            color: var(--color-texto-oscuro);
+        }
+        .memo-content textarea {
+            width: 100%;
+            height: 250px;
+            border: 1px solid var(--color-borde-gris);
+            border-radius: 8px;
+            padding: 1rem;
+            resize: vertical;
+            background-color: #f9fafb;
+            color: var(--color-texto-oscuro);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-50 shadow-lg text-white">
+        <div class="h-full flex flex-col justify-between p-6">
+            <div>
+                <h1 class="text-3xl font-bold mb-8 text-center text-white">DocuEmprende</h1>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('facturas') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-receipt mr-3"></i>
+                        <span>Facturas</span>
+                    </a>
+                    <a href="{{ url_for('guias_de_remision') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-truck-loading mr-3"></i>
+                        <span>Guías de Remisión</span>
+                    </a>
+                    <a href="{{ url_for('recibos_de_ingresos') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-money-check-alt mr-3"></i>
+                        <span>Recibos de Ingresos</span>
+                    </a>
+                    <a href="{{ url_for('boleta_de_venta') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-file-invoice mr-3"></i>
+                        <span>Boleta de Venta</span>
+                    </a>
+                    <a href="{{ url_for('orden_de_compra') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-shopping-cart mr-3"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                    <a href="{{ url_for('nota_de_credito') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-credit-card mr-3"></i>
+                        <span>Nota de Crédito</span>
+                    </a>
+                    <a href="{{ url_for('acta') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-file-alt mr-3"></i>
+                        <span>Acta</span>
+                    </a>
+                    <a href="{{ url_for('memorando') }}" class="flex items-center p-3 rounded-lg sidebar-item-active text-blue-950">
+                        <i class="fas fa-sticky-note mr-3"></i>
+                        <span>Memorando</span>
+                    </a>
+                    <a href="{{ url_for('oficio') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-building mr-3"></i>
+                        <span>Oficio</span>
+                    </a>
+                    <a href="{{ url_for('informe') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-chart-bar mr-3"></i>
+                        <span>Informe</span>
+                    </a>
+                    <a href="{{ url_for('solicitud') }}" class="flex items-center p-3 rounded-lg text-white hover:bg-white hover:text-blue-950 transition-colors">
+                        <i class="fas fa-paper-plane mr-3"></i>
+                        <span>Solicitud</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col main-content">
+        <!-- Header -->
+        <header class="header p-4 flex items-center justify-between shadow-sm fixed w-full top-0 md:left-64 z-40">
+            <button id="menu-btn" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h1 class="text-xl md:text-2xl font-bold text-blue-950">Memorando</h1>
+            <nav class="hidden md:flex items-center space-x-4">
+                <a href="{{ url_for('home') }}" class="text-blue-950 hover:text-sky-500 font-semibold">Home</a>
+                <a href="{{ url_for('dinerito') }}" class="text-blue-950 hover:text-sky-500 font-semibold">Dinerito</a>
+                <a href="{{ url_for('documentos') }}" class="text-blue-950 hover:text-sky-500 font-semibold">Documentos de mi negocio</a>
+                <a href="{{ url_for('inventario') }}" class="text-blue-950 hover:text-sky-500 font-semibold">Inventario</a>
+                <a href="{{ url_for('cuenta') }}" class="text-blue-950 hover:text-sky-500 font-semibold">User</a>
+                <a href="{{ url_for('logout') }}" class="text-blue-950 hover:text-sky-500 font-semibold">Cerrar Sesión</a>
+            </nav>
+        </header>
+
+        <!-- Main section -->
+        <main class="flex-1 p-6 md:p-10 overflow-auto mt-16 md:mt-20">
+            <div class="w-full max-w-4xl mx-auto">
+                <div class="memo-container">
+                    <!-- Encabezado del memorando -->
+                    <header class="memo-header">
+                        <h1 class="text-3xl font-bold text-center text-blue-950 mb-2">MEMORANDO</h1>
+                        <p class="text-sm text-center text-blue-950">Documento Interno de Comunicación</p>
+                    </header>
+            
+                    <!-- Campos de información del memorando -->
+                    <section class="memo-info">
+                        <div class="memo-field">
+                            <label for="destinatario">PARA:</label>
+                            <input type="text" id="destinatario" name="destinatario" class="rounded-md">
+                        </div>
+                        <div class="memo-field">
+                            <label for="remitente">DE:</label>
+                            <input type="text" id="remitente" name="remitente" class="rounded-md">
+                        </div>
+                        <div class="memo-field">
+                            <label for="fecha">FECHA:</label>
+                            <input type="text" id="fecha" name="fecha" class="rounded-md" value="23 de Octubre de 2023">
+                        </div>
+                        <div class="memo-field">
+                            <label for="asunto">ASUNTO:</label>
+                            <input type="text" id="asunto" name="asunto" class="rounded-md">
+                        </div>
+                    </section>
+            
+                    <!-- Contenido principal del memorando -->
+                    <main class="memo-content">
+                        <textarea id="contenido" placeholder="Escribe aquí el contenido del memorando..." class="rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"></textarea>
+                    </main>
+            
+                    <!-- Sección de firma -->
+                    <footer class="signature-section">
+                        <p>Atentamente,<br>
+                            (Firma)</p>
+                    </footer>
+                </div>
+                <div class="flex justify-center mt-6">
+                    <button id="save-btn" class="btn btn-ok mr-2">Guardar</button>
+                    <button id="generate-pdf-btn" class="btn btn-cancelar">Generar PDF</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para mensajes -->
+    <div id="message-modal" class="fixed inset-0 bg-neutral-950/50 hidden z-50 flex items-center justify-center">
+        <div class="bg-neutral-50 p-6 rounded-lg shadow-xl w-80 text-center">
+            <p id="modal-text" class="text-lg font-semibold mb-4 text-blue-950"></p>
+            <button id="modal-close-btn" class="btn btn-ok">OK</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menu-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const generatePdfBtn = document.getElementById('generate-pdf-btn');
+
+            // Modales
+            const messageModal = document.getElementById('message-modal');
+            const modalText = document.getElementById('modal-text');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            // Toggle sidebar en móviles
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            // Función para mostrar mensajes modales
+            function showMessage(message, type) {
+                modalText.textContent = message;
+                modalCloseBtn.className = 'btn ' + (type === 'success' ? 'btn-ok' : 'btn-cancelar');
+                messageModal.classList.remove('hidden');
+                modalCloseBtn.onclick = () => messageModal.classList.add('hidden');
+            }
+
+            saveBtn.addEventListener('click', () => {
+                const destinatario = document.getElementById('destinatario').value;
+                const remitente = document.getElementById('remitente').value;
+                const fecha = document.getElementById('fecha').value;
+                const asunto = document.getElementById('asunto').value;
+                const contenido = document.getElementById('contenido').value;
+
+                if (!destinatario || !remitente || !fecha || !asunto || !contenido) {
+                    showMessage('Todos los campos son obligatorios.', 'error');
+                    return;
+                }
+                showMessage('Memorando guardado con éxito.', 'success');
+            });
+
+            generatePdfBtn.addEventListener('click', () => {
+                const destinatario = document.getElementById('destinatario').value;
+                const remitente = document.getElementById('remitente').value;
+                const fecha = document.getElementById('fecha').value;
+                const asunto = document.getElementById('asunto').value;
+                const contenido = document.getElementById('contenido').value;
+
+                if (!destinatario || !remitente || !fecha || !asunto || !contenido) {
+                    showMessage('Rellena todos los campos antes de generar el PDF.', 'error');
+                    return;
+                }
+                showMessage('Generando PDF...', 'info');
+            });
+        });
+    </script>
+</body>
+</html>

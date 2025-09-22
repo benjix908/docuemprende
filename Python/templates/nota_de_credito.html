@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota de Crédito - DocuEmprende</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .main-content {
+            margin-top: 64px;
+            padding-left: 256px;
+        }
+        .sidebar {
+            width: 256px;
+            background-color: #0c4a6e; /* Azul profundo */
+            transition: transform 0.3s ease-in-out;
+        }
+        .menu-item:hover {
+            background-color: #155e75; /* Tonalidad de azul */
+            border-radius: 0.5rem;
+        }
+        .menu-item.active, .menu-item.selected {
+            background-color: #2563eb; /* Azul eléctrico claro */
+            border-radius: 0.5rem;
+        }
+        .menu-item.active .icon, .menu-item.active span,
+        .menu-item.selected .icon, .menu-item.selected span {
+            color: #ffffff;
+        }
+        .menu-item {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                padding-left: 0;
+            }
+            .sidebar.mobile-hidden {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body class="flex min-h-screen bg-stone-100">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 transform md:relative md:translate-x-0 mobile-hidden z-50 bg-blue-950">
+        <div class="h-full flex flex-col justify-between">
+            <div class="px-6 py-4">
+                <h1 class="text-white text-3xl font-bold rounded-lg mb-8">DocuEmprende</h1>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('facturas') }}" class="menu-item active flex items-center p-3 text-white">
+                        <i class="fas fa-receipt mr-3 icon"></i>
+                        <span>Facturas</span>
+                    </a>
+                    <a href="{{ url_for('guias_de_remision') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-truck-loading mr-3 icon"></i>
+                        <span>Guías de Remisión</span>
+                    </a>
+                    <a href="{{ url_for('recibos_de_ingresos') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-money-check-alt mr-3 icon"></i>
+                        <span>Recibos de Ingresos</span>
+                    </a>
+                    <a href="{{ url_for('boleta_de_venta') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-file-invoice mr-3 icon"></i>
+                        <span>Boleta de Venta</span>
+                    </a>
+                    <a href="{{ url_for('orden_de_compra') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-shopping-cart mr-3 icon"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                    <a href="{{ url_for('nota_de_credito') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-credit-card mr-3 icon"></i>
+                        <span>Nota de Crédito</span>
+                    </a>
+                    <a href="{{ url_for('acta') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-file-alt mr-3 icon"></i>
+                        <span>Acta</span>
+                    </a>
+                    <a href="{{ url_for('memorando') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-sticky-note mr-3 icon"></i>
+                        <span>Memorando</span>
+                    </a>
+                    <a href="{{ url_for('oficio') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-building mr-3 icon"></i>
+                        <span>Oficio</span>
+                    </a>
+                    <a href="{{ url_for('informe') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-chart-bar mr-3 icon"></i>
+                        <span>Informe</span>
+                    </a>
+                    <a href="{{ url_for('solicitud') }}" class="menu-item flex items-center p-3 text-sky-200 hover:text-white">
+                        <i class="fas fa-paper-plane mr-3 icon"></i>
+                        <span>Solicitud</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col main-content">
+        <!-- Desktop Header -->
+        <header class="bg-amber-100 shadow p-4 hidden md:flex items-center fixed w-full top-0 z-30 justify-between">
+            <h1 class="text-2xl font-bold text-sky-900">Nota de Crédito</h1>
+            <nav class="flex-1 flex justify-center space-x-6">
+                <a href="{{ url_for('home') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Home</a>
+                <a href="{{ url_for('dinerito') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Dinerito</a>
+                <a href="{{ url_for('documentos') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Documentos de mi negocio</a>
+                <a href="{{ url_for('inventario') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Inventario</a>
+                <a href="{{ url_for('cuenta') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">User</a>
+                <a href="{{ url_for('logout') }}" class="text-stone-700 hover:text-cyan-600 transition-colors duration-200 font-semibold">Cerrar Sesión</a>
+            </nav>
+            <div class="w-1/4"></div>
+        </header>
+
+        <main class="flex-1 p-8 pt-20 md:pt-8">
+            <div class="container mx-auto">
+                <div class="bg-stone-50 p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-sky-900 mb-4">Generador de Notas de Crédito</h2>
+                    <div id="message-box" class="hidden mb-4 p-3 rounded-md text-sm text-white font-semibold"></div>
+                    <form id="credit-note-form" class="space-y-4">
+                        <div>
+                            <label for="credit_note_number" class="block text-stone-700 font-medium">Número de Nota de Crédito:</label>
+                            <input type="text" id="credit_note_number" name="credit_note_number" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="credit_note_date" class="block text-stone-700 font-medium">Fecha:</label>
+                            <input type="date" id="credit_note_date" name="credit_note_date" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="original_invoice_number" class="block text-stone-700 font-medium">Número de Factura Original:</label>
+                            <input type="text" id="original_invoice_number" name="original_invoice_number" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="reason" class="block text-stone-700 font-medium">Motivo:</label>
+                            <textarea id="reason" name="reason" rows="3" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label for="amount" class="block text-stone-700 font-medium">Monto del Crédito:</label>
+                            <input type="number" id="amount" name="amount" min="0" step="any" required class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
+                        </div>
+                        
+                        <div class="flex space-x-4">
+                            <button type="submit" id="save-credit-note-btn" class="w-full bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-600 transition-colors duration-200">
+                                Guardar Nota
+                            </button>
+                            <button type="button" id="generate-pdf-btn" class="w-full bg-sky-400 text-white px-4 py-2 rounded-md hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400 transition-colors duration-200">
+                                Generar PDF
+                            </button>
+                            <button type="button" id="email-credit-note-btn" class="w-full bg-amber-400 text-white px-4 py-2 rounded-md hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400 transition-colors duration-200">
+                                Enviar por Correo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menu-btn');
+
+            if (menuBtn) {
+              menuBtn.addEventListener('click', () => {
+                  sidebar.classList.toggle('mobile-hidden');
+              });
+            }
+
+            // Set active menu item based on current page
+            const currentPath = window.location.pathname.split('/').pop();
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                const itemPath = item.href.split('/').pop();
+                if (itemPath === currentPath) {
+                    item.classList.add('selected');
+                }
+                item.addEventListener('mouseover', () => {
+                    item.classList.add('active');
+                });
+                item.addEventListener('mouseout', () => {
+                    if (!item.classList.contains('selected')) {
+                        item.classList.remove('active');
+                    }
+                });
+            });
+
+            const form = document.getElementById('credit-note-form');
+            const saveBtn = document.getElementById('save-credit-note-btn');
+            const generatePdfBtn = document.getElementById('generate-pdf-btn');
+            const emailBtn = document.getElementById('email-credit-note-btn');
+            const messageBox = document.getElementById('message-box');
+
+            function showMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
+                if (type === 'success') {
+                    messageBox.classList.add('bg-green-500');
+                } else {
+                    messageBox.classList.add('bg-red-500');
+                }
+                setTimeout(() => messageBox.classList.add('hidden'), 5000);
+            }
+
+            async function loadData() {
+                try {
+                    const response = await fetch('/get_nota_de_credito_data');
+                    if (!response.ok) {
+                        throw new Error('Error al cargar datos');
+                    }
+                    const data = await response.json();
+                    if (Object.keys(data).length > 0) {
+                        document.getElementById('credit_note_number').value = data.credit_note_number || '';
+                        document.getElementById('credit_note_date').value = data.credit_note_date || '';
+                        document.getElementById('original_invoice_number').value = data.original_invoice_number || '';
+                        document.getElementById('reason').value = data.reason || '';
+                        document.getElementById('amount').value = data.amount || '';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showMessage('Error al cargar la última nota de crédito.', 'error');
+                }
+            }
+            loadData();
+
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                saveBtn.disabled = true;
+
+                const data = {
+                    credit_note_number: document.getElementById('credit_note_number').value,
+                    credit_note_date: document.getElementById('credit_note_date').value,
+                    original_invoice_number: document.getElementById('original_invoice_number').value,
+                    reason: document.getElementById('reason').value,
+                    amount: parseFloat(document.getElementById('amount').value) || 0
+                };
+
+                try {
+                    const response = await fetch('/save_nota_de_credito_data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                    } else {
+                        showMessage(result.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error de conexión. Inténtalo de nuevo.', 'error');
+                } finally {
+                    saveBtn.disabled = false;
+                }
+            });
+
+            generatePdfBtn.addEventListener('click', () => {
+                window.jsPDF = window.jspdf.jsPDF;
+                const doc = new jsPDF();
+
+                const creditNoteNumber = document.getElementById('credit_note_number').value;
+                const creditNoteDate = document.getElementById('credit_note_date').value;
+                const originalInvoiceNumber = document.getElementById('original_invoice_number').value;
+                const reason = document.getElementById('reason').value;
+                const amount = document.getElementById('amount').value;
+                
+                doc.setFontSize(22);
+                doc.text("Nota de Crédito", 14, 20);
+                doc.setFontSize(12);
+                doc.text(`Número de Nota: ${creditNoteNumber}`, 14, 30);
+                doc.text(`Fecha: ${creditNoteDate}`, 14, 37);
+                doc.text(`Número de Factura Original: ${originalInvoiceNumber}`, 14, 44);
+                doc.text(`Motivo: ${reason}`, 14, 51);
+                doc.text(`Monto del Crédito: S/. ${amount}`, 14, 58);
+
+                doc.save(`Nota_Credito_${creditNoteNumber}.pdf`);
+            });
+
+            emailBtn.addEventListener('click', () => {
+                const subject = `Nota de Crédito Nro. ${document.getElementById('credit_note_number').value}`;
+                const body = `Hola,\nAdjunto la nota de crédito con número ${document.getElementById('credit_note_number').value} generada en Cuentas Claras.`;
+                window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            });
+        });
+    </script>
+</body>
+</html>

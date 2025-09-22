@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Solicitud - DocuEmprende</title>
+    <!-- Usamos el CDN de Tailwind para las clases base -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Definición de la paleta de colores para reutilización */
+        :root {
+            --deep-blue: #0A1C40;
+            --warm-beige: #F5F5DC;
+            --golden-sand: #E6BE8A;
+            --vibrant-sky-blue: #00BFFF;
+            --light-electric-blue: #87CEEB;
+            --broken-white: #F0F8FF;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--warm-beige);
+        }
+        .main-content {
+            margin-top: 64px;
+            padding-left: 256px;
+        }
+        .sidebar {
+            width: 256px;
+            background-color: var(--deep-blue);
+            transition: transform 0.3s ease-in-out;
+        }
+        .menu-item:hover {
+            background-color: var(--golden-sand);
+            border-radius: 0.5rem;
+        }
+        .menu-item.active, .menu-item.selected {
+            background-color: var(--golden-sand);
+            border-radius: 0.5rem;
+        }
+        .menu-item.active .icon, .menu-item.active span,
+        .menu-item.selected .icon, .menu-item.selected span {
+            color: var(--deep-blue); /* Texto oscuro para el fondo claro de arena */
+        }
+        .menu-item {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .btn-submit {
+            background-color: var(--vibrant-sky-blue);
+        }
+        .btn-submit:hover {
+            background-color: var(--light-electric-blue);
+        }
+        .message-success {
+            background-color: var(--vibrant-sky-blue);
+        }
+        .message-error {
+            background-color: var(--golden-sand);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding-left: 0;
+            }
+            .sidebar.mobile-hidden {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 transform md:relative md:translate-x-0 mobile-hidden z-50">
+        <div class="h-full flex flex-col justify-between">
+            <div class="px-6 py-4">
+                <h1 class="text-3xl font-bold rounded-lg mb-8 text-broken-white">DocuEmprende</h1>
+                <nav class="space-y-2">
+                    <a href="#" class="menu-item selected flex items-center p-3 text-broken-white">
+                        <i class="fas fa-receipt mr-3 icon"></i>
+                        <span>Facturas</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-truck-loading mr-3 icon"></i>
+                        <span>Guías de Remisión</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-money-check-alt mr-3 icon"></i>
+                        <span>Recibos de Ingresos</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-file-invoice mr-3 icon"></i>
+                        <span>Boleta de Venta</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-shopping-cart mr-3 icon"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-credit-card mr-3 icon"></i>
+                        <span>Nota de Crédito</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-file-alt mr-3 icon"></i>
+                        <span>Acta</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-sticky-note mr-3 icon"></i>
+                        <span>Memorando</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-building mr-3 icon"></i>
+                        <span>Oficio</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-chart-bar mr-3 icon"></i>
+                        <span>Informe</span>
+                    </a>
+                    <a href="#" class="menu-item flex items-center p-3 text-broken-white opacity-75 hover:opacity-100">
+                        <i class="fas fa-paper-plane mr-3 icon"></i>
+                        <span>Solicitud</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col main-content">
+        <!-- Desktop Header -->
+        <header class="bg-[var(--broken-white)] shadow p-4 hidden md:flex items-center fixed w-full top-0 z-30">
+            <h1 class="text-2xl font-bold text-[var(--vibrant-sky-blue)]">Formulario de Solicitud</h1>
+            <nav class="flex-1 flex justify-center space-x-6">
+                <a href="#" class="text-[var(--deep-blue)] hover:text-[var(--vibrant-sky-blue)] transition-colors duration-200 font-semibold">Home</a>
+                <a href="#" class="text-[var(--deep-blue)] hover:text-[var(--vibrant-sky-blue)] transition-colors duration-200 font-semibold">Dinerito</a>
+                <a href="#" class="text-[var(--deep-blue)] hover:text-[var(--vibrant-sky-blue)] transition-colors duration-200 font-semibold">Documentos de mi negocio</a>
+                <a href="#" class="text-[var(--deep-blue)] hover:text-[var(--vibrant-sky-blue)] transition-colors duration-200 font-semibold">Inventario</a>
+                <a href="#" class="text-[var(--deep-blue)] hover:text-[var(--vibrant-sky-blue)] transition-colors duration-200 font-semibold">User</a>
+                <a href="#" class="text-[var(--deep-blue)] hover:text-[var(--vibrant-sky-blue)] transition-colors duration-200 font-semibold">Cerrar Sesión</a>
+            </nav>
+        </header>
+
+        <main class="flex-1 p-8 pt-20 md:pt-8">
+            <div class="container mx-auto">
+                <div class="bg-[var(--broken-white)] p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-[var(--deep-blue)] mb-4">Enviar una Solicitud</h2>
+                    <div id="message-box" class="hidden mb-4 p-3 rounded-md text-sm font-semibold text-white"></div>
+
+                    <!-- Form Section -->
+                    <form id="requestForm" class="space-y-6">
+                        <div>
+                            <label for="fullName" class="block text-sm font-medium text-[var(--deep-blue)]">Nombre Completo</label>
+                            <div class="mt-1">
+                                <input type="text" id="fullName" name="fullName" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[var(--vibrant-sky-blue)] focus:border-[var(--vibrant-sky-blue)] sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-[var(--deep-blue)]">Correo Electrónico</label>
+                            <div class="mt-1">
+                                <input type="email" id="email" name="email" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[var(--vibrant-sky-blue)] focus:border-[var(--vibrant-sky-blue)] sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-[var(--deep-blue)]">Número de Teléfono</label>
+                            <div class="mt-1">
+                                <input type="tel" id="phone" name="phone" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[var(--vibrant-sky-blue)] focus:border-[var(--vibrant-sky-blue)] sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="requestType" class="block text-sm font-medium text-[var(--deep-blue)]">Tipo de Solicitud</label>
+                            <div class="mt-1">
+                                <select id="requestType" name="requestType" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[var(--vibrant-sky-blue)] focus:border-[var(--vibrant-sky-blue)] sm:text-sm">
+                                    <option value="">Seleccione una opción</option>
+                                    <option value="consulta">Consulta</option>
+                                    <option value="reclamo">Reclamo</option>
+                                    <option value="soporte">Soporte Técnico</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-[var(--deep-blue)]">Mensaje</label>
+                            <div class="mt-1">
+                                <textarea id="message" name="message" rows="4" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[var(--vibrant-sky-blue)] focus:border-[var(--vibrant-sky-blue)] sm:text-sm"></textarea>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="submit" class="btn-submit w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[var(--deep-blue)] transition duration-150 ease-in-out">
+                                Enviar Solicitud
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuItems = document.querySelectorAll('.menu-item');
+            const messageBox = document.getElementById('message-box');
+            
+            function showMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.classList.remove('hidden', 'message-success', 'message-error');
+                if (type === 'success') {
+                    messageBox.classList.add('message-success');
+                } else {
+                    messageBox.classList.add('message-error');
+                }
+                setTimeout(() => messageBox.classList.add('hidden'), 5000);
+            }
+
+            document.getElementById('requestForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const formData = {
+                    fullName: document.getElementById('fullName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    requestType: document.getElementById('requestType').value,
+                    message: document.getElementById('message').value
+                };
+
+                console.log('Formulario enviado:', formData);
+                showMessage('Su solicitud ha sido enviada con éxito.', 'success');
+                document.getElementById('requestForm').reset();
+            });
+
+            const currentPath = window.location.pathname.split('/').pop();
+            menuItems.forEach(item => {
+                const itemPath = item.href.split('/').pop();
+                if (itemPath === currentPath) {
+                    item.classList.add('selected');
+                }
+                item.addEventListener('mouseover', () => {
+                    item.classList.add('active');
+                });
+                item.addEventListener('mouseout', () => {
+                    if (!item.classList.contains('selected')) {
+                        item.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

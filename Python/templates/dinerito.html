@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinerito - DocuEmprende</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --color-azul-profundo: #1A2F6C;
+                --color-azul-celeste-vibrante: #3DC1D3;
+                --color-beige-calido: #F5E6D3;
+                --color-arena-dorada: #D4B485;
+                --color-azul-electrico-claro: #0096C7;
+                --color-bianco-roto: #F9F7F2;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[var(--color-bianco-roto)] min-h-screen flex flex-col">
+    <nav class="bg-[var(--color-azul-profundo)] shadow-md p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-50">
+        <div class="text-2xl font-bold text-white">
+            DocuEmprende
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="{{ url_for('home') }}" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Home</a>
+            <a href="{{ url_for('dinerito') }}" class="text-[var(--color-azul-celeste-vibrante)] font-semibold">Dinerito</a>
+            <a href="{{ url_for('documentos') }}" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Documentos de mi negocio</a>
+            <a href="{{ url_for('inventario') }}" class="text-white hover:text-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Inventario</a>
+            <a href="{{ url_for('cuenta') }}" class="text-[var(--color-azul-celeste-vibrante)] font-semibold">User</a>
+            <a href="{{ url_for('logout') }}" class="bg-[var(--color-azul-electrico-claro)] text-white px-4 py-2 rounded-full font-semibold hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300 ease-in-out">Cerrar Sesión</a>
+        </div>
+    </nav>
+    
+    <main class="flex-1 p-6 bg-[var(--color-bianco-roto)] flex flex-col items-center justify-start min-h-full pt-20">
+        <div class="bg-[var(--color-beige-calido)] p-8 rounded-lg shadow-md w-full max-w-6xl">
+            <h2 class="text-2xl font-bold text-center text-[var(--color-azul-profundo)] mb-8">Calculadora de Ingresos y Egresos Anuales</h2>
+
+            <div id="monthly-inputs" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Enero</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_enero" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_enero" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Febrero</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_febrero" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_febrero" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Marzo</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_marzo" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_marzo" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Abril</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_abril" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_abril" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Mayo</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_mayo" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_mayo" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Junio</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_junio" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_junio" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Julio</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_julio" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_julio" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Agosto</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_agosto" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_agosto" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Septiembre</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_septiembre" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_septiembre" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Octubre</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_octubre" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_octubre" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Noviembre</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_noviembre" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_noviembre" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-sm">
+                    <h4 class="font-semibold text-[var(--color-azul-profundo)] mb-2">Diciembre</h4>
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Ingresos:</label>
+                    <input type="number" id="ingresos_diciembre" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)] mb-2" />
+                    <label class="block text-sm text-[var(--color-azul-profundo)] mb-1">Egresos:</label>
+                    <input type="number" id="egresos_diciembre" value="0" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--color-azul-electrico-claro)]" />
+                </div>
+            </div>
+
+            <button id="calculateButton" class="w-full bg-[var(--color-azul-electrico-claro)] text-white font-medium py-3 px-6 rounded-lg shadow-md hover:bg-[var(--color-azul-celeste-vibrante)] transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[var(--color-arena-dorada)] focus:ring-opacity-50">
+                Calcular Totales
+            </button>
+
+            <div id="results" class="mt-8 p-6 bg-white rounded-lg shadow-sm text-center">
+                <h3 class="text-xl font-bold text-[var(--color-azul-profundo)] mb-4">Resumen Anual</h3>
+                <div class="space-y-2">
+                    <p class="text-lg text-[var(--color-azul-profundo)]">Total de Ingresos: <span id="total-ingresos" class="font-bold text-green-600">S/ 0.00</span></p>
+                    <p class="text-lg text-[var(--color-azul-profundo)]">Total de Egresos: <span id="total-egresos" class="font-bold text-red-600">S/ 0.00</span></p>
+                    <p class="text-2xl font-bold">Saldo Neto: <span id="saldo-neto" class="text-[var(--color-azul-profundo)]">S/ 0.00</span></p>
+                </div>
+            </div>
+            
+            <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const months = [
+                'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+            ];
+            
+            const calculateButton = document.getElementById('calculateButton');
+            const totalIngresosEl = document.getElementById('total-ingresos');
+            const totalEgresosEl = document.getElementById('total-egresos');
+            const saldoNetoEl = document.getElementById('saldo-neto');
+            const statusMessageEl = document.getElementById('statusMessage');
+            
+            // Función para mostrar mensajes de estado
+            const showStatus = (message, isError = false) => {
+                statusMessageEl.textContent = message;
+                statusMessageEl.classList.remove('hidden');
+                statusMessageEl.classList.remove('text-green-600', 'text-red-600');
+                statusMessageEl.classList.add(isError ? 'text-red-600' : 'text-green-600');
+            };
+
+            // Función para cargar los datos desde el servidor
+            const loadData = async () => {
+                try {
+                    const response = await fetch('/get_dinerito_data'); // <<-- Necesitas crear esta ruta en tu servidor
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar los datos.');
+                    }
+                    const data = await response.json();
+                    
+                    months.forEach(month => {
+                        if (data[month]) {
+                            document.getElementById(`ingresos_${month}`).value = data[month].ingresos;
+                            document.getElementById(`egresos_${month}`).value = data[month].egresos;
+                        }
+                    });
+                } catch (error) {
+                    showStatus('Error al cargar datos. Ingrese los valores manualmente.', true);
+                }
+            };
+
+            // Función para guardar los datos en el servidor
+            const saveData = async () => {
+                const data = {};
+                months.forEach(month => {
+                    data[month] = {
+                        ingresos: parseFloat(document.getElementById(`ingresos_${month}`).value) || 0,
+                        egresos: parseFloat(document.getElementById(`egresos_${month}`).value) || 0
+                    };
+                });
+                
+                try {
+                    const response = await fetch('/save_dinerito_data', { // <<-- Necesitas crear esta ruta en tu servidor
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Error al guardar datos.');
+                    }
+                    showStatus('Datos guardados exitosamente.', false);
+                } catch (error) {
+                    showStatus('Error al guardar datos. Revisa la conexión.', true);
+                }
+            };
+
+            // Cargar los datos al iniciar la página
+            loadData();
+            
+            // Guardar los datos en el servidor al cambiar un valor
+            document.getElementById('monthly-inputs').addEventListener('input', () => {
+                // Pequeña demora para no saturar el servidor con cada pulsación de tecla
+                clearTimeout(this.saveTimer);
+                this.saveTimer = setTimeout(saveData, 1000);
+            });
+            
+            // Evento para calcular y mostrar los totales
+            calculateButton.addEventListener('click', () => {
+                let totalIngresos = 0;
+                let totalEgresos = 0;
+
+                months.forEach(month => {
+                    const ingresosInput = document.getElementById(`ingresos_${month}`);
+                    const egresosInput = document.getElementById(`egresos_${month}`);
+                    const ingresos = parseFloat(ingresosInput.value) || 0;
+                    const egresos = parseFloat(egresosInput.value) || 0;
+                    totalIngresos += ingresos;
+                    totalEgresos += egresos;
+                });
+
+                const saldoNeto = totalIngresos - totalEgresos;
+
+                totalIngresosEl.textContent = `S/ ${totalIngresos.toFixed(2)}`;
+                totalEgresosEl.textContent = `S/ ${totalEgresos.toFixed(2)}`;
+                saldoNetoEl.textContent = `S/ ${saldoNeto.toFixed(2)}`;
+
+                // Cambiar el color del saldo neto
+                saldoNetoEl.classList.remove('text-green-600', 'text-red-600');
+                if (saldoNeto >= 0) {
+                    saldoNetoEl.classList.add('text-green-600');
+                } else {
+                    saldoNetoEl.classList.add('text-red-600');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orden de Compra - DocuEmprende</title>
+    <!-- Tailwind CSS desde CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuración de Tailwind para colores personalizados
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'azul-profundo': '#101e3e',
+                        'beige-calido': '#c0b7a8',
+                        'arena-dorada': '#d4a373',
+                        'azul-celeste-vibrante': '#06b6d4',
+                        'azul-electrico-claro': '#38bdf8',
+                        'bianco-roto': '#f7f8f7',
+                    },
+                },
+            },
+        };
+    </script>
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Se reemplazará por 'bianco-roto' con Tailwind */
+        }
+        .main-content {
+            margin-top: 64px;
+            padding-left: 256px;
+        }
+        .sidebar {
+            width: 256px;
+            background-color: #1a202c; /* Se reemplazará por 'azul-profundo' con Tailwind */
+            transition: transform 0.3s ease-in-out;
+        }
+        .menu-item:hover {
+            background-color: #2d3748; /* Se reemplazará por un tono de azul más claro */
+            border-radius: 0.5rem;
+        }
+        .menu-item.active, .menu-item.selected {
+            background-color: #4a5568; /* Se reemplazará por un tono de azul más claro */
+            border-radius: 0.5rem;
+        }
+        .menu-item.active .icon, .menu-item.active span,
+        .menu-item.selected .icon, .menu-item.selected span {
+            color: #ffffff;
+        }
+        .menu-item {
+            transition: background-color 0.2s, color 0.2s;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                padding-left: 0;
+            }
+            .sidebar.mobile-hidden {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body class="flex min-h-screen bg-bianco-roto">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 transform md:relative md:translate-x-0 mobile-hidden z-50 bg-azul-profundo">
+        <div class="h-full flex flex-col justify-between">
+            <div class="px-6 py-4">
+                <h1 class="text-white text-3xl font-bold rounded-lg mb-8">DocuEmprende</h1>
+                <nav class="space-y-2">
+                    <a href="{{ url_for('facturas') }}" class="menu-item active flex items-center p-3 text-white">
+                        <i class="fas fa-receipt mr-3 icon"></i>
+                        <span>Facturas</span>
+                    </a>
+                    <a href="{{ url_for('guias_de_remision') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-truck-loading mr-3 icon"></i>
+                        <span>Guías de Remisión</span>
+                    </a>
+                    <a href="{{ url_for('recibos_de_ingresos') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-money-check-alt mr-3 icon"></i>
+                        <span>Recibos de Ingresos</span>
+                    </a>
+                    <a href="{{ url_for('boleta_de_venta') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-file-invoice mr-3 icon"></i>
+                        <span>Boleta de Venta</span>
+                    </a>
+                    <a href="{{ url_for('orden_de_compra') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-shopping-cart mr-3 icon"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                    <a href="{{ url_for('nota_de_credito') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-credit-card mr-3 icon"></i>
+                        <span>Nota de Crédito</span>
+                    </a>
+                    <a href="{{ url_for('acta') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-file-alt mr-3 icon"></i>
+                        <span>Acta</span>
+                    </a>
+                    <a href="{{ url_for('memorando') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-sticky-note mr-3 icon"></i>
+                        <span>Memorando</span>
+                    </a>
+                    <a href="{{ url_for('oficio') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-building mr-3 icon"></i>
+                        <span>Oficio</span>
+                    </a>
+                    <a href="{{ url_for('informe') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-chart-bar mr-3 icon"></i>
+                        <span>Informe</span>
+                    </a>
+                    <a href="{{ url_for('solicitud') }}" class="menu-item flex items-center p-3 text-white opacity-70 hover:opacity-100">
+                        <i class="fas fa-paper-plane mr-3 icon"></i>
+                        <span>Solicitud</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col main-content">
+        <!-- Desktop Header -->
+        <header class="bg-bianco-roto shadow p-4 hidden md:flex items-center fixed w-full top-0 z-30 justify-between">
+            <h1 class="text-2xl font-bold text-azul-profundo">Orden de Compra</h1>
+            <nav class="flex-1 flex justify-center space-x-6">
+                <a href="{{ url_for('home') }}" class="text-azul-profundo opacity-70 hover:opacity-100 transition-colors duration-200 font-semibold">Home</a>
+                <a href="{{ url_for('dinerito') }}" class="text-azul-profundo opacity-70 hover:opacity-100 transition-colors duration-200 font-semibold">Dinerito</a>
+                <a href="{{ url_for('documentos') }}" class="text-azul-profundo opacity-70 hover:opacity-100 transition-colors duration-200 font-semibold">Documentos de mi negocio</a>
+                <a href="{{ url_for('inventario') }}" class="text-azul-profundo opacity-70 hover:opacity-100 transition-colors duration-200 font-semibold">Inventario</a>
+                <a href="{{ url_for('cuenta') }}" class="text-azul-profundo opacity-70 hover:opacity-100 transition-colors duration-200 font-semibold">User</a>
+                <a href="{{ url_for('logout') }}" class="text-azul-profundo opacity-70 hover:opacity-100 transition-colors duration-200 font-semibold">Cerrar Sesión</a>
+            </nav>
+            <div class="w-1/4"></div>
+        </header>
+
+        <main class="flex-1 p-8 pt-20 md:pt-8">
+            <div class="container mx-auto">
+                <div class="bg-bianco-roto p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-azul-profundo mb-4">Generador de Órdenes de Compra</h2>
+                    <div id="message-box" class="hidden mb-4 p-3 rounded-md text-sm text-white font-semibold"></div>
+                    <form id="purchase-form" class="space-y-4">
+                        <div>
+                            <label for="purchase_number" class="block text-azul-profundo font-medium">Número de Orden:</label>
+                            <input type="text" id="purchase_number" name="purchase_number" required class="mt-1 block w-full px-3 py-2 border border-beige-calido rounded-md shadow-sm focus:outline-none focus:ring-azul-electrico-claro focus:border-azul-electrico-claro sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="purchase_date" class="block text-azul-profundo font-medium">Fecha:</label>
+                            <input type="date" id="purchase_date" name="purchase_date" required class="mt-1 block w-full px-3 py-2 border border-beige-calido rounded-md shadow-sm focus:outline-none focus:ring-azul-electrico-claro focus:border-azul-electrico-claro sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="supplier_name" class="block text-azul-profundo font-medium">Nombre del Proveedor:</label>
+                            <input type="text" id="supplier_name" name="supplier_name" required class="mt-1 block w-full px-3 py-2 border border-beige-calido rounded-md shadow-sm focus:outline-none focus:ring-azul-electrico-claro focus:border-azul-electrico-claro sm:text-sm">
+                        </div>
+
+                        <div id="items-container" class="space-y-2">
+                            <h3 class="text-lg font-bold text-azul-profundo">Productos a Comprar</h3>
+                        </div>
+                        <button type="button" id="add-item-btn" class="bg-azul-electrico-claro text-white px-4 py-2 rounded-md hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-azul-electrico-claro transition-colors duration-200">
+                            Añadir Producto
+                        </button>
+
+                        <div class="flex space-x-4">
+                            <button type="submit" id="save-purchase-btn" class="w-full bg-arena-dorada text-white px-4 py-2 rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-arena-dorada transition-colors duration-200">
+                                Guardar Orden
+                            </button>
+                            <button type="button" id="generate-pdf-btn" class="w-full bg-azul-celeste-vibrante text-white px-4 py-2 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-azul-celeste-vibrante transition-colors duration-200">
+                                Generar PDF
+                            </button>
+                            <button type="button" id="email-purchase-btn" class="w-full bg-beige-calido text-white px-4 py-2 rounded-md hover:bg-stone-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-beige-calido transition-colors duration-200">
+                                Enviar por Correo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menu-btn');
+
+            if (menuBtn) {
+                menuBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('mobile-hidden');
+                });
+            }
+
+            // Set active menu item based on current page
+            const currentPath = window.location.pathname.split('/').pop();
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                const itemPath = item.href.split('/').pop();
+                if (itemPath === 'orden_de_compra') {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+                item.addEventListener('mouseover', () => {
+                    item.classList.add('active');
+                });
+                item.addEventListener('mouseout', () => {
+                    if (!item.classList.contains('selected')) {
+                        item.classList.remove('active');
+                    }
+                });
+            });
+
+            const form = document.getElementById('purchase-form');
+            const itemsContainer = document.getElementById('items-container');
+            const addItemBtn = document.getElementById('add-item-btn');
+            const saveBtn = document.getElementById('save-purchase-btn');
+            const generatePdfBtn = document.getElementById('generate-pdf-btn');
+            const emailBtn = document.getElementById('email-purchase-btn');
+            const messageBox = document.getElementById('message-box');
+
+            function showMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.classList.remove('hidden', 'bg-red-500', 'bg-green-500');
+                if (type === 'success') {
+                    messageBox.classList.add('bg-green-500');
+                } else {
+                    messageBox.classList.add('bg-red-500');
+                }
+                setTimeout(() => messageBox.classList.add('hidden'), 5000);
+            }
+
+            function addItemRow(item = { description: '', quantity: '', price: '' }) {
+                const row = document.createElement('div');
+                row.className = 'flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4';
+                row.innerHTML = `
+                    <input type="text" placeholder="Descripción" value="${item.description}" class="item-description mt-1 block w-full sm:w-1/2 px-3 py-2 border border-beige-calido rounded-md shadow-sm focus:outline-none focus:ring-azul-electrico-claro focus:border-azul-electrico-claro sm:text-sm">
+                    <input type="number" placeholder="Cantidad" value="${item.quantity}" min="0" step="any" class="item-quantity mt-1 block w-full sm:w-1/4 px-3 py-2 border border-beige-calido rounded-md shadow-sm focus:outline-none focus:ring-azul-electrico-claro focus:border-azul-electrico-claro sm:text-sm">
+                    <input type="number" placeholder="Precio" value="${item.price}" min="0" step="any" class="item-price mt-1 block w-full sm:w-1/4 px-3 py-2 border border-beige-calido rounded-md shadow-sm focus:outline-none focus:ring-azul-electrico-claro focus:border-azul-electrico-claro sm:text-sm">
+                    <button type="button" class="remove-item-btn text-azul-profundo hover:opacity-70 self-center"><i class="fas fa-trash"></i></button>
+                `;
+                itemsContainer.appendChild(row);
+                row.querySelector('.remove-item-btn').addEventListener('click', () => {
+                    row.remove();
+                });
+            }
+
+            addItemBtn.addEventListener('click', () => addItemRow());
+
+            async function loadData() {
+                try {
+                    const response = await fetch('/get_orden_de_compra_data');
+                    if (!response.ok) {
+                        throw new Error('Error al cargar datos');
+                    }
+                    const data = await response.json();
+                    if (Object.keys(data).length > 0) {
+                        document.getElementById('purchase_number').value = data.purchase_number || '';
+                        document.getElementById('purchase_date').value = data.purchase_date || '';
+                        document.getElementById('supplier_name').value = data.supplier_name || '';
+                        itemsContainer.innerHTML = '';
+                        if (data.items && data.items.length > 0) {
+                            data.items.forEach(item => addItemRow(item));
+                        } else {
+                            addItemRow();
+                        }
+                    } else {
+                        addItemRow();
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showMessage('Error al cargar la última orden.', 'error');
+                    addItemRow();
+                }
+            }
+            loadData();
+
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                saveBtn.disabled = true;
+
+                const items = [];
+                const itemRows = itemsContainer.querySelectorAll('.flex-col');
+                itemRows.forEach(row => {
+                    items.push({
+                        description: row.querySelector('.item-description').value,
+                        quantity: parseFloat(row.querySelector('.item-quantity').value) || 0,
+                        price: parseFloat(row.querySelector('.item-price').value) || 0
+                    });
+                });
+
+                const data = {
+                    purchase_number: document.getElementById('purchase_number').value,
+                    purchase_date: document.getElementById('purchase_date').value,
+                    supplier_name: document.getElementById('supplier_name').value,
+                    items: items
+                };
+
+                try {
+                    const response = await fetch('/save_orden_de_compra_data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        showMessage(result.message, 'success');
+                    } else {
+                        showMessage(result.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error de conexión. Inténtalo de nuevo.', 'error');
+                } finally {
+                    saveBtn.disabled = false;
+                }
+            });
+
+            generatePdfBtn.addEventListener('click', () => {
+                window.jsPDF = window.jspdf.jsPDF;
+                const doc = new jsPDF();
+
+                const purchaseNumber = document.getElementById('purchase_number').value;
+                const purchaseDate = document.getElementById('purchase_date').value;
+                const supplierName = document.getElementById('supplier_name').value;
+
+                doc.setFontSize(22);
+                doc.text("Orden de Compra", 14, 20);
+                doc.setFontSize(12);
+                doc.text(`Número de Orden: ${purchaseNumber}`, 14, 30);
+                doc.text(`Fecha: ${purchaseDate}`, 14, 37);
+                doc.text(`Proveedor: ${supplierName}`, 14, 44);
+
+                const items = [];
+                const itemRows = itemsContainer.querySelectorAll('.flex-col');
+                let total = 0;
+                itemRows.forEach(row => {
+                    const description = row.querySelector('.item-description').value;
+                    const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+                    const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                    const subtotal = quantity * price;
+                    items.push([description, quantity, price.toFixed(2), subtotal.toFixed(2)]);
+                    total += subtotal;
+                });
+
+                doc.autoTable({
+                    startY: 55,
+                    head: [['Descripción', 'Cantidad', 'Precio Unitario', 'Subtotal']],
+                    body: items,
+                    theme: 'striped',
+                    styles: { fillColor: [16, 30, 62], textColor: 255 }, // azul-profundo
+                    headStyles: { fillColor: [16, 30, 62] }
+                });
+
+                const finalY = doc.autoTable.previous.finalY;
+                doc.setFontSize(14);
+                doc.text(`Total: S/. ${total.toFixed(2)}`, 14, finalY + 10);
+
+                doc.save(`Orden_Compra_${purchaseNumber}.pdf`);
+            });
+
+            emailBtn.addEventListener('click', () => {
+                const subject = `Orden de Compra Nro. ${document.getElementById('purchase_number').value}`;
+                const body = `Hola,\nAdjunto la orden de compra con número ${document.getElementById('purchase_number').value} generada en Cuentas Claras.`;
+                window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            });
+        });
+    </script>
+</body>
+</html>
